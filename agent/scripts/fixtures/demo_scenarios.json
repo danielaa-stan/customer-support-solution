@@ -1,0 +1,15 @@
+[
+  {"name": "1. Too expensive -> retention", "user_id": "u_demo_family",
+   "messages": ["It has become too expensive for me. I want to cancel my subscription.",
+                "OK, I'll take the discount."],
+   "expect_tools": ["get_user_profile", "get_available_offers", "search_policy", "apply_retention_offer"]},
+  {"name": "2. Duplicate charge -> auto refund", "user_id": "u_demo_double",
+   "messages": ["I was charged twice for my subscription! Please refund my money."],
+   "expect_tools": ["get_payments", "search_policy", "issue_refund"]},
+  {"name": "3. Just cancel -> fair cancellation", "user_id": "u_demo_cancel",
+   "messages": ["Just cancel my subscription.", "No, cancel it.", "Yes."],
+   "expect_tools": ["get_user_profile", "cancel_subscription", "confirm_action"]},
+  {"name": "Bonus. Large refund -> escalation", "user_id": "u_demo_escalate",
+   "messages": ["I was charged 47.97 USD by mistake for three months in advance. Please refund it."],
+   "expect_tools": ["get_payments", "issue_refund", "escalate_to_human"]}
+]
