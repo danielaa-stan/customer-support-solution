@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 
 from agent.rag.chunking import chunk_cases, chunk_policies
-from agent.rag.embeddings import Embedder, GeminiEmbedder, TfidfEmbedder
+from agent.rag.embeddings import Embedder, GeminiEmbedder, RateLimit, TfidfEmbedder
 from agent.rag.index import VectorIndex
 from agent.rag.loader import load_cases, load_policies
 from agent.rag.retriever import Retriever
@@ -17,7 +17,9 @@ def make_embedder(settings: Settings, for_loading: bool = False) -> Embedder:
     rag = settings.rag
     if rag.embedding_provider == "gemini":
         return GeminiEmbedder(rag.embedding_model, settings.gemini_api_key, settings.llm.base_url,
-                              rag.embedding_batch_size, settings.llm.max_retries, settings.llm.retry_backoff_s)
+                              rag.embedding_batch_size, settings.llm.max_retries, settings.llm.retry_backoff_s,
+                              RateLimit(rag.embedding_texts_per_minute, rag.rate_limit_max_retries,
+                                        rag.rate_limit_wait_s))
     if rag.embedding_provider == "tfidf":
         return TfidfEmbedder.load(rag.index_dir) if for_loading else TfidfEmbedder()
     raise ValueError(f"Unknown embedding_provider: {rag.embedding_provider}")

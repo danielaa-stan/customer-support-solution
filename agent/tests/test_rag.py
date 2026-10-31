@@ -88,3 +88,43 @@ def test_rag_tools_return_contract_envelope(retriever, rag_settings):
     res = provider.call("search_policy", {"query": "duplicate charge"})
     assert res.ok and res.status == "done" and res.data["results"][0]["policy_ref"] == "refund-policy#2.2"
     assert provider.call("search_policy", {"query": " "}).error["code"] == "INVALID_ARGUMENT"
+
+
+# ---------------------------------------------------------------- rate limiting
+from types import SimpleNamespace as NS  # noqa: E402
+
+import openai  # noqa: E402
+
+from agent.rag.embeddings import GeminiEmbedder, RateLimit, TextThrottle, retry_after_s  # noqa: E402
+
+
+def test_throttle_waits_when_minute_budget_is_used():
+    now, slept = [0.0], []
+    t = TextThrottle(100, clock=lambda: now[0], sleep=lambda s: (slept.append(s), now.__setitem__(0, now[0] + s)))
+    t.acquire(60)
+    t.acquire(30)
+    assert slept == []
+    t.acquire(30)                       # 120 > 100 -> wait for the window
+    assert slept and slept[0] > 59
+
+
+def test_retry_after_is_read_from_the_error():
+    assert retry_after_s(Exception("Please retry in 29.4s."), 35) == pytest.approx(30.4)
+    assert retry_after_s(Exception("no hint"), 35) == 35
+
+
+def test_embedder_waits_on_429_and_succeeds():
+    calls, slept = [], []
+    quota = openai.RateLimitError("Please retry in 2s.", response=NS(status_code=429, request=None, headers={}),
+                                  body=None)
+
+    def create(model, input):
+        calls.append(len(input))
+        if len(calls) == 1:
+            raise quota
+        return NS(data=[NS(embedding=[1.0, 0.0]) for _ in input])
+
+    e = GeminiEmbedder("m", "k", "u", 10, 1, 1.0, RateLimit(90, 3, 35.0),
+                       client=NS(embeddings=NS(create=create)), sleep=slept.append)
+    assert e.embed(["a", "b"]).shape == (2, 2)
+    assert slept == [3.0]

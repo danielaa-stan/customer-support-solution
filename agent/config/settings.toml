@@ -48,7 +48,11 @@ cases_file = "data/cases.json"
 index_dir = "runtime/rag"               # built by: python -m agent.scripts.build_index
 embedding_provider = "gemini"           # gemini | tfidf (offline fallback, no API key)
 embedding_model = "gemini-embedding-001"
-embedding_batch_size = 50
+embedding_batch_size = 25
+# Free tier: 100 embedded texts per minute (each text in a batch counts). Stay below it.
+embedding_texts_per_minute = 90
+rate_limit_max_retries = 5     # on HTTP 429 wait as long as the API asks (or rate_limit_wait_s)
+rate_limit_wait_s = 35.0
 max_chunk_chars = 1200                  # longer policy sections are split by sentences
 chunk_overlap_sentences = 1
 policy_top_k = 3

@@ -78,6 +78,9 @@ class RAGSettings:
     embedding_provider: str
     embedding_model: str
     embedding_batch_size: int
+    embedding_texts_per_minute: int
+    rate_limit_max_retries: int
+    rate_limit_wait_s: float
     max_chunk_chars: int
     chunk_overlap_sentences: int
     policy_top_k: int
