@@ -32,7 +32,7 @@ public sealed class TestHarness : IDisposable
 
     public List<T> Query<T>(string sql, object? param = null)
     {
-        using var connection = Services.GetRequiredService<SqliteConnectionFactory>().Open();
+        using var connection = Services.GetRequiredService<DbConnectionFactory>().Open();
         return connection.Query<T>(sql, param).ToList();
     }
 

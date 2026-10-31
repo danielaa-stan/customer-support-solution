@@ -5,19 +5,25 @@ using SupportServer.Infrastructure.Db;
 
 namespace SupportServer.Infrastructure.Billing;
 
-public sealed class SqliteSupportStore(SqliteConnectionFactory db) : ISupportStore
+public sealed class SqlSupportStore(DbConnectionFactory db) : ISupportStore
 {
+    private SqlDialect D => db.Dialect;
+
+    private string PendingColumns =>
+        $"id, session_id, user_id, tool, args_json, summary, proposed_at_turn, status, {D.DateText("created_at")}, {D.DateText("resolved_at")}";
+
     public PendingAction? GetPendingAction(string id)
     {
         using var c = db.Open();
-        return c.QuerySingleOrDefault<PendingAction>("SELECT * FROM pending_actions WHERE id = @id", new { id });
+        return c.QuerySingleOrDefault<PendingAction>(
+            $"SELECT {PendingColumns} FROM pending_actions WHERE id = @id", new { id });
     }
 
     public PendingAction? FindPendingAction(string sessionId, string tool, string argsJson)
     {
         using var c = db.Open();
         return c.QueryFirstOrDefault<PendingAction>(
-            "SELECT * FROM pending_actions WHERE session_id = @sessionId AND tool = @tool " +
+            $"SELECT {PendingColumns} FROM pending_actions WHERE session_id = @sessionId AND tool = @tool " +
             "AND args_json = @argsJson AND status = 'pending' ORDER BY created_at DESC",
             new { sessionId, tool, argsJson });
     }
@@ -26,11 +32,11 @@ public sealed class SqliteSupportStore(SqliteConnectionFactory db) : ISupportSto
     {
         using var c = db.Open();
         c.Execute(
-            """
+            $"""
             INSERT INTO pending_actions
               (id, session_id, user_id, tool, args_json, summary, proposed_at_turn, status, created_at)
             VALUES
-              (@Id, @SessionId, @UserId, @Tool, @ArgsJson, @Summary, @ProposedAtTurn, @Status, @CreatedAt)
+              (@Id, @SessionId, @UserId, @Tool, @ArgsJson, @Summary, @ProposedAtTurn, @Status, {D.Ts("@CreatedAt")})
             """,
             action);
     }
@@ -39,7 +45,7 @@ public sealed class SqliteSupportStore(SqliteConnectionFactory db) : ISupportSto
     {
         using var c = db.Open();
         return c.Execute(
-            "UPDATE pending_actions SET status = @newStatus, resolved_at = @at WHERE id = @id AND status = 'pending'",
+            $"UPDATE pending_actions SET status = @newStatus, resolved_at = {D.Ts("@at")} WHERE id = @id AND status = 'pending'",
             new { newStatus, at = Iso.Format(now), id }) == 1;
     }
 
@@ -47,11 +53,11 @@ public sealed class SqliteSupportStore(SqliteConnectionFactory db) : ISupportSto
     {
         using var c = db.Open();
         c.Execute(
-            """
+            $"""
             INSERT INTO tickets
               (id, user_id, session_id, priority, category, summary, suggested_action_json, status, created_at)
             VALUES
-              (@Id, @UserId, @SessionId, @Priority, @Category, @Summary, @SuggestedActionJson, @Status, @CreatedAt)
+              (@Id, @UserId, @SessionId, @Priority, @Category, @Summary, @SuggestedActionJson, @Status, {D.Ts("@CreatedAt")})
             """,
             ticket);
     }
