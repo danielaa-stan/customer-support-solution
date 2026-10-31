@@ -30,7 +30,9 @@ tool_result_max_chars = 6000   # longer tool results are truncated before going 
 session_id_prefix = "ses"
 
 [mcp]
-server_command = "dotnet run --project server"   # override in .env: MCP_SERVER_COMMAND
+# A's C# server, built once with: dotnet build -c Release server/SupportServer.slnx
+# (not "dotnet run": build output on stdout would corrupt the MCP stream, see server/README.md)
+server_command = "dotnet server/SupportServer/bin/Release/net10.0/SupportServer.dll"   # override: MCP_SERVER_COMMAND
 context_tool = "sys_set_context"                 # contracts/03: called before every user turn
 hidden_tool_prefix = "sys_"                      # tools with this prefix are never shown to the model
 startup_timeout_s = 90.0
