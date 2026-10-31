@@ -11,6 +11,8 @@ using SupportServer.Infrastructure.Db;
 // Logging is configured first so that startup problems are captured as well.
 // stdout is reserved for the MCP protocol, so the console sink writes to stderr only.
 // Diagnostic logs (this file) are separate from the business audit trail (audit_log table).
+DotEnv.Load(); // read the repository .env (the agent may not forward its environment to this process)
+
 var logDir = RepoPaths.Resolve(Environment.GetEnvironmentVariable("LOG_DIR") ?? "runtime/logs");
 var minimumLevel = Enum.TryParse<LogEventLevel>(Environment.GetEnvironmentVariable("LOG_LEVEL"), ignoreCase: true, out var parsedLevel)
     ? parsedLevel
@@ -58,8 +60,9 @@ try
         .WithStdioServerTransport()
         .WithToolsFromAssembly();
 
-    Log.Information("Support MCP server starting (db: {DbPath}, clock: {Clock}, logs: {LogDir})",
-        options.DbPath, options.DemoNow?.ToString("u") ?? "system", logDir);
+    Log.Information("Support MCP server starting (database: {Database}, clock: {Clock}, logs: {LogDir})",
+        options.DatabaseUrl is { } url ? "PostgreSQL " + PostgresConnection.Describe(url) : "SQLite " + options.DbPath,
+        options.DemoNow?.ToString("u") ?? "system", logDir);
 
     await builder.Build().RunAsync();
 }

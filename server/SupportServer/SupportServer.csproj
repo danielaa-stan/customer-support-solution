@@ -14,14 +14,17 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
     <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Single source of truth for the DB schema: contracts/schema.sql -->
+    <!-- PostgreSQL schema: the shared contract, single source of truth -->
     <EmbeddedResource Include="..\..\contracts\schema.sql" LogicalName="schema.sql" />
+    <!-- SQLite copy, used only when SUPPORT_DATABASE_URL is not set (local development and tests) -->
+    <EmbeddedResource Include="Infrastructure\Db\schema.sqlite.sql" LogicalName="schema.sqlite.sql" />
   </ItemGroup>
 
 </Project>

@@ -16,12 +16,12 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton(options);
         services.AddSingleton<IClock>(options.DemoNow is { } now ? new FixedClock(now) : new SystemClock());
-        services.AddSingleton(new SqliteConnectionFactory(options.DbPath));
+        services.AddSingleton(new DbConnectionFactory(options));
 
         // Ports and adapters: swapping an implementation does not touch the rest of the code.
         services.AddSingleton<IBillingProvider, MockBillingProvider>();
-        services.AddSingleton<IAuditLog, SqliteAuditLog>();
-        services.AddSingleton<ISupportStore, SqliteSupportStore>();
+        services.AddSingleton<IAuditLog, SqlAuditLog>();
+        services.AddSingleton<ISupportStore, SqlSupportStore>();
 
         services.AddSingleton(new SessionState(options.AllowSessionSwitch));
         services.AddSingleton<ToolRunner>();
