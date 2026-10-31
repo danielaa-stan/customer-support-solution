@@ -1,0 +1,4 @@
+# runtime-дані та секрети (див. contracts/01-ownership.md)
+runtime/
+.env
+*.db
