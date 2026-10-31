@@ -1,0 +1,26 @@
+# Render Blueprint: PostgreSQL + the Support Copilot web app (Docker).
+# Render dashboard -> New -> Blueprint -> pick this repo. Then set GEMINI_API_KEY and ACCESS_CODE.
+databases:
+  - name: support-db
+    plan: free
+    databaseName: support
+    user: support_app
+
+services:
+  - type: web
+    name: support-copilot
+    runtime: docker
+    plan: free
+    dockerfilePath: ./deploy/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: SUPPORT_DATABASE_URL       # the MCP server uses PostgreSQL when this is set
+        fromDatabase:
+          name: support-db
+          property: connectionString
+      - key: GEMINI_API_KEY
+        sync: false                     # secret: entered in the Render dashboard
+      - key: ACCESS_CODE
+        sync: false                     # people need this code to use the public demo
+      - key: DEMO_NOW
+        value: "2026-10-31T12:00:00Z"
