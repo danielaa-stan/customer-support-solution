@@ -49,10 +49,28 @@ class PromptSettings:
 
 
 @dataclass(frozen=True)
+class AgentSettings:
+    max_tool_rounds: int
+    tool_result_max_chars: int
+    session_id_prefix: str
+
+
+@dataclass(frozen=True)
+class MCPSettings:
+    server_command: str
+    context_tool: str
+    hidden_tool_prefix: str
+    startup_timeout_s: float
+    call_timeout_s: float
+
+
+@dataclass(frozen=True)
 class Settings:
     llm: LLMSettings
     logging: LoggingSettings
     prompts: PromptSettings
+    agent: AgentSettings
+    mcp: MCPSettings
     gemini_api_key: str = field(repr=False)
 
 
@@ -99,4 +117,6 @@ def load_settings(path: Path = DEFAULT_SETTINGS_PATH, env: Mapping[str, str] | N
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is not set. Copy .env.example to .env and add the key.")
     return Settings(llm=llm, logging=LoggingSettings(**log), prompts=PromptSettings(**prompts),
+                    agent=AgentSettings(**_section(raw, "agent", AgentSettings, env)),
+                    mcp=MCPSettings(**_section(raw, "mcp", MCPSettings, env)),
                     gemini_api_key=api_key)

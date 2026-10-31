@@ -23,3 +23,15 @@ quiet_libraries = ["httpx", "httpx2", "httpcore", "openai"]
 
 [prompts]
 dir = "prompts"                # relative to this file
+
+[agent]
+max_tool_rounds = 6            # LLM <-> tools round trips per customer message
+tool_result_max_chars = 6000   # longer tool results are truncated before going back to the model
+session_id_prefix = "ses"
+
+[mcp]
+server_command = "dotnet run --project server"   # override in .env: MCP_SERVER_COMMAND
+context_tool = "sys_set_context"                 # contracts/03: called before every user turn
+hidden_tool_prefix = "sys_"                      # tools with this prefix are never shown to the model
+startup_timeout_s = 90.0
+call_timeout_s = 30.0
