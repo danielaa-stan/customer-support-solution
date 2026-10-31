@@ -21,6 +21,9 @@ safety = "Safety screening"
 ended = "Chat ended. Transcript saved for analytics."
 sample_label = "Try"
 starting = "Starting the support server..."
+access_prompt = "Access code"
+access_help = "This public demo uses a free-tier API key. Ask the team for the access code."
+access_wrong = "Wrong access code."
 
 [status_icons]
 done = "✅"

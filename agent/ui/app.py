@@ -4,7 +4,9 @@ Run from the repo root:   streamlit run agent/ui/app.py
 """
 from __future__ import annotations
 
+import hmac
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -40,6 +42,24 @@ T, ICONS = ui["texts"], ui["status_icons"]
 CUSTOMERS = {c["id"]: c for c in ui["customers"]}
 
 st.set_page_config(page_title=T["page_title"], page_icon="🎧", layout="wide")
+
+
+def require_access_code() -> None:
+    """Public deployments set ACCESS_CODE so strangers cannot spend the API quota. Local runs skip this."""
+    expected = os.getenv("ACCESS_CODE")
+    if not expected or st.session_state.get("authorized"):
+        return
+    st.title(T["app_title"])
+    code = st.text_input(T["access_prompt"], type="password", help=T["access_help"])
+    if code and hmac.compare_digest(code, expected):
+        st.session_state.authorized = True
+        st.rerun()
+    if code:
+        st.error(T["access_wrong"])
+    st.stop()
+
+
+require_access_code()
 
 
 def close_agent(user_left: bool) -> None:
