@@ -1,0 +1,32 @@
+[
+  {
+    "name": "search_policy",
+    "description": "Search company policies (refunds, retention offers, cancellation, plans and pricing, pause, known technical issues, escalation, agent conduct). Use it before any refund, cancellation, plan change or offer, and cite the returned policy_ref.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {"type": "string", "description": "What rule you need, in plain English, e.g. 'duplicate charge refund'"},
+        "doc_id": {"type": "string", "description": "Optional: search only this document",
+                   "enum": ["refund-policy", "retention-rules", "cancellation", "plans-and-pricing", "pause-policy",
+                            "known-issues", "escalation-matrix", "agent-conduct"]},
+        "top_k": {"type": "integer", "description": "How many sections to return (1-5)"}
+      },
+      "required": ["query"]
+    }
+  },
+  {
+    "name": "find_similar_cases",
+    "description": "Find resolved past support cases similar to the current one, with the actions taken and the outcome. Use it to choose a proven resolution.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {"type": "string", "description": "Short description of the customer's problem"},
+        "reason": {"type": "string", "description": "Optional filter by underlying reason",
+                   "enum": ["price_too_high", "low_usage", "technical_problems", "switching_competitor", "double_charge",
+                            "billing_confusion", "temporary_break", "other", "unknown"]},
+        "top_k": {"type": "integer", "description": "How many cases to return (1-5)"}
+      },
+      "required": ["query"]
+    }
+  }
+]

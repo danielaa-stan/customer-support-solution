@@ -71,6 +71,22 @@ class SafetySettings:
 
 
 @dataclass(frozen=True)
+class RAGSettings:
+    policies_dir: Path
+    cases_file: Path
+    index_dir: Path
+    embedding_provider: str
+    embedding_model: str
+    embedding_batch_size: int
+    max_chunk_chars: int
+    chunk_overlap_sentences: int
+    policy_top_k: int
+    case_top_k: int
+    min_score: dict[str, float]           # per embedding provider
+    tools_file: Path
+
+
+@dataclass(frozen=True)
 class Settings:
     llm: LLMSettings
     logging: LoggingSettings
@@ -78,6 +94,7 @@ class Settings:
     agent: AgentSettings
     mcp: MCPSettings
     safety: SafetySettings
+    rag: RAGSettings
     gemini_api_key: str = field(repr=False)
 
 
@@ -121,6 +138,10 @@ def load_settings(path: Path = DEFAULT_SETTINGS_PATH, env: Mapping[str, str] | N
     prompts["dir"] = (path.parent / prompts["dir"]).resolve()
 
     safety = _section(raw, "safety", SafetySettings, env)
+    rag = _section(raw, "rag", RAGSettings, env)
+    for key in ("policies_dir", "cases_file", "index_dir"):
+        rag[key] = Path(rag[key])                              # relative to the repo root
+    rag["tools_file"] = (path.parent / rag["tools_file"]).resolve()  # relative to settings.toml
 
     api_key = env.get("GEMINI_API_KEY", "")
     if not api_key:
@@ -130,4 +151,5 @@ def load_settings(path: Path = DEFAULT_SETTINGS_PATH, env: Mapping[str, str] | N
                     mcp=MCPSettings(**_section(raw, "mcp", MCPSettings, env)),
                     safety=SafetySettings(config_file=(path.parent / safety["config_file"]).resolve(),
                                           escalation_tool=safety["escalation_tool"]),
+                    rag=RAGSettings(**rag),
                     gemini_api_key=api_key)

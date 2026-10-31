@@ -3,3 +3,5 @@ fastmcp>=2.10
 python-dotenv>=1.0
 tomli>=2.0; python_version < "3.11"
 pytest>=8.0
+numpy>=1.26
+scikit-learn>=1.3
