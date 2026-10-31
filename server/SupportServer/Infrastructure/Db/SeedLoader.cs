@@ -18,13 +18,13 @@ public static class SeedLoader
         var root = document.RootElement;
 
         if (root.ValueKind != JsonValueKind.Object)
-            throw new InvalidDataException($"{seedPath}: очікується JSON-об'єкт із ключами-таблицями.");
+            throw new InvalidDataException($"{seedPath}: expected a JSON object whose keys are table names.");
 
         foreach (var property in root.EnumerateObject())
         {
             if (!Tables.Contains(property.Name))
                 throw new InvalidDataException(
-                    $"{seedPath}: невідома таблиця '{property.Name}'. Дозволені: {string.Join(", ", Tables)}.");
+                    $"{seedPath}: unknown table '{property.Name}'. Allowed: {string.Join(", ", Tables)}.");
         }
 
         using var transaction = connection.BeginTransaction();
@@ -34,7 +34,7 @@ public static class SeedLoader
         {
             if (!root.TryGetProperty(table, out var rows)) continue;
             if (rows.ValueKind != JsonValueKind.Array)
-                throw new InvalidDataException($"{seedPath}: '{table}' має бути масивом.");
+                throw new InvalidDataException($"{seedPath}: '{table}' must be an array.");
 
             var columns = GetColumns(connection, transaction, table);
             var index = 0;
@@ -46,7 +46,7 @@ public static class SeedLoader
                 {
                     if (!columns.Contains(field.Name))
                         throw new InvalidDataException(
-                            $"seed.{table}[{index}]: невідоме поле '{field.Name}'. Колонки: {string.Join(", ", columns)}.");
+                            $"seed.{table}[{index}]: unknown field '{field.Name}'. Columns: {string.Join(", ", columns)}.");
                 }
 
                 using var command = connection.CreateCommand();
@@ -93,6 +93,6 @@ public static class SeedLoader
         JsonValueKind.True => 1L,
         JsonValueKind.False => 0L,
         JsonValueKind.Number => value.TryGetInt64(out var l) ? l : value.GetDouble(),
-        _ => throw new InvalidDataException($"seed.{table}[{index}].{field}: підтримуються лише рядки, числа, true/false, null."),
+        _ => throw new InvalidDataException($"seed.{table}[{index}].{field}: only strings, numbers, true/false and null are supported."),
     };
 }

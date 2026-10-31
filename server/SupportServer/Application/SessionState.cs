@@ -30,10 +30,10 @@ public sealed class SessionState(bool allowSwitch)
             {
                 if (_current.SessionId != sessionId || _current.UserId != userId)
                     return new ContextChangeResult(false,
-                        "Контекст сесії вже задано й не може бути змінений. Для нової розмови запустіть сервер заново.");
+                        "The session context is already set and cannot be changed. Start a new server process for a new conversation.");
 
                 if (userTurn < _current.UserTurn)
-                    return new ContextChangeResult(false, "user_turn не може зменшуватись.");
+                    return new ContextChangeResult(false, "user_turn cannot decrease.");
             }
 
             _current = new ToolContext(sessionId, userId, userTurn);

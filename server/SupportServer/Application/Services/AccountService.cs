@@ -10,7 +10,7 @@ public sealed class AccountService(IBillingProvider billing, IClock clock)
     {
         var account = billing.GetAccount(ctx.UserId);
         if (account is null)
-            return ToolOutcome.Fail(ErrorCodes.NotFound, "Акаунт користувача не знайдено.");
+            return ToolOutcome.Fail(ErrorCodes.NotFound, "User account not found.");
 
         var now = clock.UtcNow;
         var sub = account.Subscription;

@@ -15,22 +15,22 @@ public static class RefundPolicy
     public static RefundDecision Evaluate(Payment payment, DateTimeOffset now)
     {
         if (payment.Status == "refunded")
-            return new(RefundVerdict.AlreadyRefunded, null, $"Платіж {payment.Id} уже повернено раніше.");
+            return new(RefundVerdict.AlreadyRefunded, null, $"Payment {payment.Id} has already been refunded.");
 
         if (payment.Status != "succeeded")
             return new(RefundVerdict.NotRefundable, PolicyRefs.RefundWindow,
-                "Повернути можна лише успішно проведений платіж.");
+                "Only a successfully charged payment can be refunded.");
 
         var age = now - Iso.Parse(payment.ChargedAt);
         if (age > TimeSpan.FromDays(BusinessRules.RefundWindowDays))
             return new(RefundVerdict.WindowExpired, PolicyRefs.RefundWindow,
-                $"Платіж старший за {BusinessRules.RefundWindowDays} днів, повернення за політикою неможливе.");
+                $"The payment is older than {BusinessRules.RefundWindowDays} days, so a refund is not possible under the policy.");
 
         if (payment.Amount > BusinessRules.AutoRefundLimit + 1e-9)
             return new(RefundVerdict.OverAutoLimit, PolicyRefs.RefundAutoLimit,
-                $"Сума {payment.Amount:0.00} {payment.Currency} перевищує ліміт автоматичного повернення " +
-                $"({BusinessRules.AutoRefundLimit:0.00}). Потрібен агент-людина.");
+                $"The amount {payment.Amount:0.00} {payment.Currency} exceeds the automatic refund limit " +
+                $"({BusinessRules.AutoRefundLimit:0.00}). A human agent is required.");
 
-        return new(RefundVerdict.Allowed, null, "Повернення дозволено.");
+        return new(RefundVerdict.Allowed, null, "Refund allowed.");
     }
 }

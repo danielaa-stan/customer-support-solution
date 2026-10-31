@@ -40,20 +40,20 @@ public sealed partial class PaymentService(IBillingProvider billing, IClock cloc
     public ToolOutcome IssueRefund(ToolContext ctx, string paymentId, string reasonCode, string policyRef)
     {
         if (string.IsNullOrWhiteSpace(paymentId))
-            return ToolOutcome.Fail(ErrorCodes.InvalidArgument, "payment_id обов'язковий.");
+            return ToolOutcome.Fail(ErrorCodes.InvalidArgument, "payment_id is required.");
 
         if (!ReasonCodes.IsValid(reasonCode))
             return ToolOutcome.Fail(ErrorCodes.InvalidArgument,
-                $"Невідомий reason_code. Дозволені: {ReasonCodes.Allowed}.");
+                $"Unknown reason_code. Allowed values: {ReasonCodes.Allowed}.");
 
         if (string.IsNullOrWhiteSpace(policyRef) || !PolicyRefFormat().IsMatch(policyRef))
             return ToolOutcome.Fail(ErrorCodes.InvalidArgument,
-                "policy_ref обов'язковий і має формат doc_id#розділ, напр. refund-policy#2.1.", reasonCode);
+                "policy_ref is required and must look like doc_id#section, e.g. refund-policy#2.1.", reasonCode);
 
         var payment = billing.GetPayment(ctx.UserId, paymentId);
         if (payment is null)
             return ToolOutcome.Fail(ErrorCodes.NotFound,
-                "Платіж не знайдено серед платежів цього користувача.", reasonCode);
+                "Payment not found among this user's payments.", reasonCode);
 
         var decision = RefundPolicy.Evaluate(payment, clock.UtcNow);
         switch (decision.Verdict)
@@ -75,11 +75,11 @@ public sealed partial class PaymentService(IBillingProvider billing, IClock cloc
                 .Any(d => d.PaymentId == payment.Id);
             if (!isDuplicate)
                 return ToolOutcome.Denied(ErrorCodes.PolicyDenied,
-                    "Подвійного списання за цим платежем не виявлено.", PolicyRefs.DuplicateCharge, reasonCode);
+                    "No double charge was found for this payment.", PolicyRefs.DuplicateCharge, reasonCode);
         }
 
         if (!billing.RefundPayment(payment.Id, reasonCode, clock.UtcNow))
-            return ToolOutcome.Denied(ErrorCodes.AlreadyDone, $"Платіж {payment.Id} уже повернено раніше.",
+            return ToolOutcome.Denied(ErrorCodes.AlreadyDone, $"Payment {payment.Id} has already been refunded.",
                 reasonCode: reasonCode);
 
         return ToolOutcome.Done(new

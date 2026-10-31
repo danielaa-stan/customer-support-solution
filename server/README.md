@@ -1,101 +1,108 @@
-# server: MCP-сервер підтримки (зона A)
+# server: support MCP server (zone A)
 
-C# / .NET 10, офіційний MCP SDK (`ModelContextProtocol`), SQLite. Контракт: [`../contracts`](../contracts).
+C# / .NET 10, the official MCP SDK (`ModelContextProtocol`), SQLite. Contract: [`../contracts`](../contracts).
 
-## Запуск
+## Run
 
 ```bash
 dotnet build server/SupportServer.slnx
 dotnet test  server/SupportServer.slnx
 
-# MCP-сервер (stdio): його запускає агент (B) командою зі змінної SERVER_COMMAND
+# MCP server (stdio). The agent (B) starts it using MCP_SERVER_COMMAND
 dotnet run --project server/SupportServer -c Release
 
-# чиста база (видаляє runtime/support.db і створює заново зі seed)
+# clean database (deletes runtime/support.db and recreates it from the seed)
 dotnet run --project server/SupportServer -c Release -- reset-db
 ```
 
-Змінні оточення (всі необов'язкові):
+Note for B: the project lives in `server/SupportServer`, so `MCP_SERVER_COMMAND` must be
+`dotnet run --project server/SupportServer -c Release` (not `--project server`).
+`dotnet run` may print build output to stdout, which would corrupt the MCP stream. The safest launch is to build once
+(`dotnet build -c Release server/SupportServer.slnx`) and then start
+`dotnet server/SupportServer/bin/Release/net10.0/SupportServer.dll`.
 
-| Змінна | За замовчуванням | Призначення |
-|--------|------------------|-------------|
-| `SUPPORT_DB_PATH` | `runtime/support.db` | файл бази |
-| `SEED_PATH` | `data/seed/seed.json`, інакше `server/dev-seed.json` | початкові дані |
-| `DEMO_NOW` | `2026-10-31T12:00:00Z` | «поточний час» для детермінованого демо (`real` = справжній час) |
+Environment variables (all optional):
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `SUPPORT_DB_PATH` | `runtime/support.db` | database file |
+| `SEED_PATH` | `data/seed/seed.json`, otherwise `server/dev-seed.json` | initial data |
+| `DEMO_NOW` | `2026-10-31T12:00:00Z` | "current time" for deterministic demos (`real` = real clock) |
 | `LOG_LEVEL` | `Information` | `Verbose`, `Debug`, `Information`, `Warning`, `Error` |
-| `LOG_DIR` | `runtime/logs` | папка файлових логів |
-| `ALLOW_SESSION_SWITCH` | `false` | лише для локальної розробки: дозволяє змінювати користувача в одному процесі |
-Seed береться з `data/seed/seed.json` (від C); якщо його ще немає, використовується `server/dev-seed.json`.
+| `LOG_DIR` | `runtime/logs` | folder for file logs |
+| `ALLOW_SESSION_SWITCH` | `false` | local development only: lets one process switch the user |
 
-## Архітектура
+Relative paths are resolved from the repository root (the folder containing `contracts/`), so the working directory does not matter.
+
+## Architecture
 
 ```
 Tools  ->  ToolRunner  ->  Services  ->  Domain.Policies (guard)
- (MCP)     (контекст,       (сценарії)    (чисті правила)
-           audit, формат)        |
+ (MCP)     (context,        (use cases)   (pure rules)
+           audit, format)        |
                                  v
                       Ports: IBillingProvider, IAuditLog
                                  ^
                       Infrastructure: MockBillingProvider, SqliteAuditLog (SQLite)
 ```
 
-| Шар | Папка | Відповідальність |
-|-----|-------|------------------|
-| Tools | `Tools/` | Тонкий шар MCP: опис інструмента й виклик `ToolRunner`. Логіки немає. |
-| Application | `Application/` | `ToolRunner` (контекст сесії, audit, єдиний формат відповіді), сервіси сценаріїв, порти. |
-| Domain | `Domain/` | Моделі та **чисті правила** (`RefundPolicy`, `DuplicateChargeDetector`): safety guard без залежностей, повністю тестований. |
-| Infrastructure | `Infrastructure/` | SQLite, `MockBillingProvider`, `SqliteAuditLog`, завантаження seed. |
-| Config | `Config/` | Бізнес-константи (`BusinessRules`) з `contracts/04-business-rules.md`. |
+| Layer | Folder | Responsibility |
+|-------|--------|----------------|
+| Tools | `Tools/` | Thin MCP layer: tool description and a call to `ToolRunner`. No logic. |
+| Application | `Application/` | `ToolRunner` (session context, audit, common response format), use-case services, ports. |
+| Domain | `Domain/` | Models and **pure rules** (`RefundPolicy`, `DuplicateChargeDetector`): a safety guard with no dependencies, fully testable. |
+| Infrastructure | `Infrastructure/` | SQLite, `MockBillingProvider`, `SqliteAuditLog`, seed loading. |
+| Config | `Config/` | Business constants (`BusinessRules`) from `contracts/04-business-rules.md`. |
 
-Ключові рішення:
+Key decisions:
 
-1. **Guard поза LLM.** Правила це звичайний код; модель не може їх обійти промптом.
-2. **Ізоляція користувача.** `user_id` задає лише `sys_set_context` (викликає B). Модель не передає його й не може діяти над чужим акаунтом.
-3. **Аудит неможливо забути.** Кожен інструмент виконується через `ToolRunner`, який пише `audit_log` також для відмов.
-4. **Заміна білінгу одним класом.** `IBillingProvider` це порт; `MockBillingProvider` одна з реалізацій.
-5. **Єдина схема.** `contracts/schema.sql` вбудовується в збірку, тож БД завжди відповідає контракту.
-6. **Перевірка тверджень моделі.** Причина `double_charge` у refund перевіряється за даними платежів.
+1. **The guard lives outside the LLM.** Rules are plain code; the model cannot talk its way around them.
+2. **User isolation.** `user_id` is set only by `sys_set_context` (called by B). The model never passes it and cannot act on another account.
+3. **Auditing cannot be forgotten.** Every tool runs through `ToolRunner`, which writes `audit_log` for refusals as well.
+4. **Billing is replaceable with one class.** `IBillingProvider` is a port; `MockBillingProvider` is one implementation.
+5. **One schema.** `contracts/schema.sql` is embedded into the build, so the DB always matches the contract.
+6. **Model claims are verified.** The `double_charge` reason of a refund is checked against the payment data.
 
-## Статус інструментів
+## Logging
 
-| Інструмент | Стан |
-|------------|------|
-| `sys_set_context`, `get_user_profile`, `get_payments`, `issue_refund` | готово + тести |
-| `get_available_offers`, `apply_retention_offer`, `pause_subscription`, `change_plan` | далі |
-| `cancel_subscription`, `confirm_action`, `reject_action` (двокроковий потік) | далі |
-| `escalate_to_human` | далі |
+Two different kinds of logs that are deliberately kept apart:
 
-## Логи
+| | Audit log | Diagnostic log |
+|---|-----------|----------------|
+| Audience | business, dashboard, judges | developer |
+| Where | `audit_log` table in SQLite | `runtime/logs/server-YYYYMMDD.log` and stderr |
+| Content | who did what and why (AI actions) | startup, calls, refusals, errors with stack traces |
 
-Є два різні види, і вони не змішуються:
+Diagnostic logs use Serilog; the code itself only uses the standard `ILogger<T>`, and Serilog is wired in `Program.cs` only.
+`stdout` is reserved for the MCP protocol, so the console sink writes to `stderr`. Files roll daily and 7 days are kept.
 
-| | Audit log | Технічний лог |
-|---|-----------|---------------|
-| Для кого | бізнес, дашборд, журі | розробник |
-| Де | таблиця `audit_log` у SQLite | `runtime/logs/server-YYYYMMDD.log` і stderr |
-| Що | хто, що, чому зробив AI | запуск, виклики, відмови, помилки зі стеком |
-
-Технічні логи: Serilog (у коді лишається стандартний `ILogger<T>`, Serilog підключається лише в `Program.cs`).
-`stdout` зарезервований під протокол MCP, тому консоль пише лише в `stderr`. Файли ротуються щодня, зберігається 7 днів.
-
-Один виклик інструмента дає один рядок:
+One tool call produces one line:
 
 ```
 12:04:11 [WRN] issue_refund -> denied POLICY_DENIED refund-policy#2.1 | session=ses_01 user=u_demo_family | 3 ms, audit=128
 ```
 
-Рівні: Information (успішні виклики), Warning (відмови політики, `needs_human`, неправильні аргументи), Error (необроблені винятки),
-Debug (аргументи викликів; вмикається через `LOG_LEVEL=Debug`). В логах лише ідентифікатори, без імен, email і ключів.
+Levels: Information (successful calls), Warning (policy refusals, `needs_human`, invalid arguments), Error (unhandled exceptions),
+Debug (call arguments; enable with `LOG_LEVEL=Debug`). Logs contain identifiers only: no names, emails or keys.
 
-## Захист контексту сесії
+## Session context protection
 
-`sys_set_context` викликає лише система (B), модель його не бачить. Додатково сервер після першого виклику не дозволяє
-змінити користувача чи сесію, а `user_turn` може лише зростати. Нова розмова означає новий запуск процесу сервера.
-Для локальних експериментів із кількома користувачами в одному процесі: `ALLOW_SESSION_SWITCH=true`.
+`sys_set_context` is called only by the system (B); the model must not see it. As defense in depth, after the first call the server
+refuses to change the user or session, and `user_turn` can only grow. A new conversation means a new server process.
+For local experiments with several users in one process use `ALLOW_SESSION_SWITCH=true`.
 
-## Як додати інструмент
+## Tool status
 
-1. Правило (якщо є) у `Domain/Policies/` + тест.
-2. Метод у сервісі, що повертає `ToolOutcome` (`Done`, `Denied`, `HumanRequired`, `Fail`).
-3. Тонкий метод у `Tools/` з `[McpServerTool]` і викликом `runner.Run(...)`.
-4. Тест у `SupportServer.Tests/ToolFlowTests.cs`.
+| Tool | State |
+|------|-------|
+| `sys_set_context`, `get_user_profile`, `get_payments`, `issue_refund` | done + tests |
+| `get_available_offers`, `apply_retention_offer`, `pause_subscription`, `change_plan` | next |
+| `cancel_subscription`, `confirm_action`, `reject_action` (two-step flow) | next |
+| `escalate_to_human` | next |
+
+## How to add a tool
+
+1. The rule (if any) goes into `Domain/Policies/` with a test.
+2. A method in a service that returns `ToolOutcome` (`Done`, `Denied`, `HumanRequired`, `Fail`).
+3. A thin method in `Tools/` with `[McpServerTool]` that calls `runner.Run(...)`.
+4. A test in `SupportServer.Tests/ToolFlowTests.cs`.

@@ -10,22 +10,22 @@ namespace SupportServer.Tools;
 public sealed class SessionTools(SessionState session, IBillingProvider billing, ILogger<SessionTools> log)
 {
     [McpServerTool(Name = "sys_set_context"),
-     Description("СЛУЖБОВИЙ інструмент для системи, не для моделі. Задає користувача й номер репліки поточної сесії.")]
+     Description("INTERNAL tool for the system, not for the model. Sets the user and the turn number of the current session.")]
     public string SetContext(
-        [Description("Ідентифікатор сесії чату")] string session_id,
-        [Description("Ідентифікатор користувача, з яким іде розмова")] string user_id,
-        [Description("Лічильник повідомлень користувача, починаючи з 1")] int user_turn)
+        [Description("Chat session id")] string session_id,
+        [Description("Id of the user the conversation is with")] string user_id,
+        [Description("Counter of the user's messages, starting at 1")] int user_turn)
     {
         ToolOutcome outcome;
 
         if (string.IsNullOrWhiteSpace(session_id) || string.IsNullOrWhiteSpace(user_id) || user_turn < 1)
         {
             outcome = ToolOutcome.Fail(ErrorCodes.InvalidArgument,
-                "session_id і user_id обов'язкові, user_turn має бути >= 1.");
+                "session_id and user_id are required, user_turn must be >= 1.");
         }
         else if (billing.GetAccount(user_id) is null)
         {
-            outcome = ToolOutcome.Fail(ErrorCodes.NotFound, $"Користувача {user_id} не знайдено.");
+            outcome = ToolOutcome.Fail(ErrorCodes.NotFound, $"User {user_id} not found.");
         }
         else
         {

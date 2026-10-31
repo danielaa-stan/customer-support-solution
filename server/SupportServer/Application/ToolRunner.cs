@@ -35,7 +35,7 @@ public sealed class ToolRunner(SessionState session, IAuditLog audit, IClock clo
         if (ctx is null)
         {
             outcome = ToolOutcome.Fail(ErrorCodes.NoContext,
-                "Контекст сесії не задано (службовий виклик sys_set_context не виконано).");
+                "The session context is not set (the internal sys_set_context call has not been made).");
         }
         else
         {
@@ -46,7 +46,7 @@ public sealed class ToolRunner(SessionState session, IAuditLog audit, IClock clo
             catch (Exception ex)
             {
                 log.LogError(ex, "{Tool} failed with an unhandled exception", tool);
-                outcome = ToolOutcome.Fail(ErrorCodes.Internal, "Внутрішня помилка сервера. Спробуйте пізніше.");
+                outcome = ToolOutcome.Fail(ErrorCodes.Internal, "Internal server error. Please try again later.");
             }
         }
 

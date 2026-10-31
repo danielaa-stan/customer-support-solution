@@ -11,8 +11,8 @@ namespace SupportServer.Tools;
 public sealed class AccountTools(ToolRunner runner, AccountService account)
 {
     [McpServerTool(Name = "get_user_profile"),
-     Description("Профіль поточного клієнта: підписка (план, статус, ціна, дата списання, стаж), " +
-                 "активність за 30 днів і чи вже була пропозиція утримання. Лише читання.")]
+     Description("Profile of the current customer: subscription (plan, status, price, next billing date, tenure), " +
+                 "30-day activity and whether a retention offer was already used. Read-only.")]
     public string GetUserProfile() =>
         runner.Run("get_user_profile", AutonomyLevel.Read, new { }, ctx => account.GetProfile(ctx));
 }
