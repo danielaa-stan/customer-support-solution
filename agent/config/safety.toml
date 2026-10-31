@@ -1,0 +1,29 @@
+# Pre-LLM screening of customer messages. Patterns are case-insensitive regular expressions.
+# action = "handover": skip the LLM, escalate to a human, reply with `reply_prompt`.
+# action = "warn_model": add `note_prompt` for the model before the customer message, then continue.
+
+[categories.distress]
+action = "handover"
+reply_prompt = "distress_reply"
+priority = "high"
+escalation_category = "other"
+patterns = ["kill myself", "end my life", "suicid", "self[- ]harm", "want to die", "no reason to live"]
+
+[categories.legal_threat]
+action = "handover"
+reply_prompt = "legal_threat_reply"
+priority = "high"
+escalation_category = "billing_issue"
+patterns = ["chargeback", "lawyer", "sue (you|your)", "legal action", "report you to (my )?bank"]
+
+[categories.prompt_injection]
+action = "warn_model"
+note_prompt = "injection_note"
+patterns = [
+  "ignore (all |your |the )?(previous |prior )?(rules|instructions)",
+  "you are now",
+  "system prompt",
+  "act as (an? )?(admin|developer|system)",
+  "disregard .*polic",
+  "developer mode",
+]

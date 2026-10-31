@@ -1,0 +1,69 @@
+# Agent settings (non-secret). Secrets such as GEMINI_API_KEY live only in .env.
+# Any value can be overridden by an environment variable named SECTION_KEY,
+# e.g. LLM_REASONING_EFFORT=low or LOGGING_CONSOLE_LEVEL=DEBUG.
+
+[llm]
+base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
+model = "gemma-4-26b-a4b-it"
+reasoning_effort = ""          # "" = model default (thinking on). Gemma 4 on the Gemini API rejects this
+                               # parameter (HTTP 400); the client then falls back to the default.
+temperature = 0.2
+timeout_s = 90.0
+max_retries = 2
+retry_backoff_s = 1.0          # wait before retry n = retry_backoff_s * 2^n
+# Free tier limits requests per minute. On HTTP 429 wait as long as the API asks (or rate_limit_wait_s).
+rate_limit_max_retries = 5
+rate_limit_wait_s = 30.0
+thought_open_tag = "<thought>"
+thought_close_tag = "</thought>"
+
+[logging]
+console_level = "INFO"
+file_level = "DEBUG"           # the file log contains full prompts and answers
+dir = "runtime/logs"           # relative to the repo root
+file_name = "agent.log"
+quiet_libraries = ["httpx", "httpx2", "httpcore", "openai"]
+
+[prompts]
+dir = "prompts"                # relative to this file
+
+[agent]
+max_tool_rounds = 6            # LLM <-> tools round trips per customer message
+tool_result_max_chars = 6000   # longer tool results are truncated before going back to the model
+session_id_prefix = "ses"
+
+[mcp]
+# A's C# server, built once with: dotnet build -c Release server/SupportServer.slnx
+# (not "dotnet run": build output on stdout would corrupt the MCP stream, see server/README.md)
+server_command = "dotnet server/SupportServer/bin/Release/net10.0/SupportServer.dll"   # override: MCP_SERVER_COMMAND
+context_tool = "sys_set_context"                 # contracts/03: called before every user turn
+hidden_tool_prefix = "sys_"                      # tools with this prefix are never shown to the model
+startup_timeout_s = 90.0
+call_timeout_s = 30.0
+
+[safety]
+config_file = "safety.toml"    # relative to this file
+escalation_tool = "escalate_to_human"
+
+[rag]
+policies_dir = "data/policies"          # relative to the repo root (written by the data owner)
+cases_file = "data/cases.json"
+index_dir = "runtime/rag"               # built by: python -m agent.scripts.build_index
+embedding_provider = "gemini"           # gemini | tfidf (offline fallback, no API key)
+embedding_model = "gemini-embedding-001"
+embedding_batch_size = 25
+# Free tier: 100 embedded texts per minute (each text in a batch counts). Stay below it.
+embedding_texts_per_minute = 90
+rate_limit_max_retries = 5     # on HTTP 429 wait as long as the API asks (or rate_limit_wait_s)
+rate_limit_wait_s = 35.0
+max_chunk_chars = 1200                  # longer policy sections are split by sentences
+chunk_overlap_sentences = 1
+policy_top_k = 3
+case_top_k = 3
+# Cosine similarity below this is "not found" (kb_gap). Scales differ per embedder: calibrate with eval_rag.
+# tfidf value measured on data/: relevant top-1 hits score 0.11-0.31, unrelated queries 0.0.
+min_score = { gemini = 0.30, tfidf = 0.05 }
+tools_file = "tools/rag_tools.json"     # tool descriptions shown to the model, relative to this file
+
+[transcripts]
+dir = "runtime/transcripts"    # contracts/06; override: TRANSCRIPTS_DIR (shared .env variable)

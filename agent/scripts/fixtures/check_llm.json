@@ -1,0 +1,25 @@
+{
+  "text_prompt": "Say hello in five words.",
+  "tools": [{
+    "type": "function",
+    "function": {
+      "name": "get_payments",
+      "description": "Get the current customer's recent payments.",
+      "parameters": {"type": "object", "properties": {"limit": {"type": "integer"}}}
+    }
+  }],
+  "messages": [
+    {"role": "system", "content": "You are a support agent. Always check facts with tools before answering. Use only the tools you are given."},
+    {"role": "user", "content": "I was charged twice! Refund me."}
+  ],
+  "fake_tool_result": {
+    "ok": true, "status": "done", "error": null, "needs_human": false, "audit_id": 1,
+    "data": {
+      "payments": [
+        {"id": "pay_demo_dbl_1", "amount": 9.99, "currency": "USD", "status": "succeeded", "charged_at": "2026-10-29T08:00:00Z"},
+        {"id": "pay_demo_dbl_2", "amount": 9.99, "currency": "USD", "status": "succeeded", "charged_at": "2026-10-29T08:02:00Z"}
+      ],
+      "duplicate_charge_candidates": [["pay_demo_dbl_1", "pay_demo_dbl_2"]]
+    }
+  }
+}

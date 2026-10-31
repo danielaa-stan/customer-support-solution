@@ -1,0 +1,50 @@
+# Texts and demo data for the Streamlit UI (agent/ui/app.py). English only (contracts/01).
+
+[texts]
+page_title = "Support Copilot"
+app_title = "Support Copilot"
+app_subtitle = "Open-weight AI (Gemma 4) that resolves problems with real actions, not just answers"
+customer_label = "Customer"
+new_chat = "New chat"
+end_chat = "End chat"
+chat_header = "Customer chat"
+chat_placeholder = "Type as the customer..."
+working = "Copilot is checking the account and policies..."
+copilot_header = "Copilot panel"
+copilot_empty = "The reasoning, actions and cited policies appear here after the first message."
+reasoning = "Reasoning"
+actions = "Actions (MCP tools)"
+policies_applied = "Policy applied"
+policies_retrieved = "Also retrieved (RAG)"
+needs_human = "Handed over to a human agent"
+safety = "Safety screening"
+ended = "Chat ended. Transcript saved for analytics."
+sample_label = "Try"
+starting = "Starting the support server..."
+
+[status_icons]
+done = "✅"
+pending_confirmation = "🟡"
+denied = "⛔"
+needs_human = "🧑‍💼"
+error = "⚠️"
+
+[[customers]]
+id = "u_demo_family"
+label = "Olena — 'too expensive'"
+sample = "It has become too expensive for me. I want to cancel my subscription."
+
+[[customers]]
+id = "u_demo_double"
+label = "Andriy — 'charged twice'"
+sample = "I was charged twice for my subscription! Please refund my money."
+
+[[customers]]
+id = "u_demo_cancel"
+label = "Maria — 'just cancel'"
+sample = "Just cancel my subscription."
+
+[[customers]]
+id = "u_demo_escalate"
+label = "Ihor — large refund"
+sample = "I was charged 23.97 USD by mistake for three months in advance. Please refund it."
