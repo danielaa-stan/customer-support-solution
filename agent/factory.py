@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 
 from agent.core.agent import SupportAgent
+from agent.core.transcripts import TranscriptWriter
 from agent.llm import LLMClient
 from agent.prompts import PromptLibrary
 from agent.rag.pipeline import load_retriever
@@ -37,4 +38,5 @@ def build_agent(settings: Settings, user_id: str, providers: list[ToolProvider] 
     prompts = PromptLibrary(settings.prompts.dir)
     return SupportAgent(llm or LLMClient.from_settings(settings), build_registry(settings, providers),
                         prompts, settings.agent, user_id,
-                        MessageScreener.from_file(settings.safety.config_file), settings.safety)
+                        MessageScreener.from_file(settings.safety.config_file), settings.safety,
+                        TranscriptWriter(settings.transcripts.dir))

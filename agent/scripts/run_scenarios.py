@@ -43,6 +43,7 @@ def run(scenario: dict, settings) -> bool:
                             e.result.get("status"), err or "")
             logger.info("agent> %s", turn.reply)
     finally:
+        agent.end()
         close(agent)
     missing = [t for t in scenario["expect_tools"] if t not in called]
     ok = not missing

@@ -15,6 +15,7 @@ from agent.safety.screening import MessageScreener, ScreeningResult
 from agent.settings import AgentSettings, SafetySettings
 from agent.tools.base import ToolRegistry, ToolResult, truncate_json
 from agent.core.session import Session, ToolEvent
+from agent.core.transcripts import TranscriptWriter
 
 logger = logging.getLogger(__name__)
 
@@ -33,17 +34,31 @@ class AgentTurn:
 
 class SupportAgent:
     def __init__(self, llm: LLMClient, tools: ToolRegistry, prompts: PromptLibrary, cfg: AgentSettings,
-                 user_id: str, screener: MessageScreener, safety_cfg: SafetySettings):
+                 user_id: str, screener: MessageScreener, safety_cfg: SafetySettings,
+                 transcripts: TranscriptWriter):
         self.llm = llm
         self.tools = tools
         self.prompts = prompts
         self.cfg = cfg
         self.screener = screener
         self.safety_cfg = safety_cfg
+        self.transcripts = transcripts
+        self.escalated = False
         self.session = Session.start(user_id, cfg.session_id_prefix, prompts.get("system"))
         logger.info("Session %s started for user %s", self.session.session_id, user_id)
 
     def handle(self, text: str) -> AgentTurn:
+        turn = self._handle_turn(text)
+        self.escalated |= turn.needs_human
+        self.transcripts.write(self.session)
+        return turn
+
+    def end(self, user_left: bool = False) -> None:
+        """Finalise the transcript when the chat is closed."""
+        reason = "escalated" if self.escalated else ("user_left" if user_left else "resolved_by_agent")
+        self.transcripts.write(self.session, end_reason=reason)
+
+    def _handle_turn(self, text: str) -> AgentTurn:
         s = self.session
         start = time.perf_counter()
         s.user_turn += 1

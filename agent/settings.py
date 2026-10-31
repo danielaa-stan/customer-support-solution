@@ -90,6 +90,11 @@ class RAGSettings:
 
 
 @dataclass(frozen=True)
+class TranscriptSettings:
+    dir: Path
+
+
+@dataclass(frozen=True)
 class Settings:
     llm: LLMSettings
     logging: LoggingSettings
@@ -98,6 +103,7 @@ class Settings:
     mcp: MCPSettings
     safety: SafetySettings
     rag: RAGSettings
+    transcripts: TranscriptSettings
     gemini_api_key: str = field(repr=False)
 
 
@@ -155,4 +161,6 @@ def load_settings(path: Path = DEFAULT_SETTINGS_PATH, env: Mapping[str, str] | N
                     safety=SafetySettings(config_file=(path.parent / safety["config_file"]).resolve(),
                                           escalation_tool=safety["escalation_tool"]),
                     rag=RAGSettings(**rag),
+                    transcripts=TranscriptSettings(
+                        dir=Path(_section(raw, "transcripts", TranscriptSettings, env)["dir"])),
                     gemini_api_key=api_key)

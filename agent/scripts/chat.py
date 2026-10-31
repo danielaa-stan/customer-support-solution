@@ -37,6 +37,7 @@ def main() -> int:
             if turn.needs_human:
                 logger.warning("Needs a human agent.")
     finally:
+        agent.end()
         for provider in getattr(agent.tools, "_providers", []):
             close = getattr(provider, "close", None)
             if close:

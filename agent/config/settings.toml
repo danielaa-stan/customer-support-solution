@@ -61,3 +61,6 @@ case_top_k = 3
 # tfidf value measured on data/: relevant top-1 hits score 0.11-0.31, unrelated queries 0.0.
 min_score = { gemini = 0.30, tfidf = 0.05 }
 tools_file = "tools/rag_tools.json"     # tool descriptions shown to the model, relative to this file
+
+[transcripts]
+dir = "runtime/transcripts"    # contracts/06; override: TRANSCRIPTS_DIR (shared .env variable)
