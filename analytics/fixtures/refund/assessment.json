@@ -1,0 +1,19 @@
+{
+  "primary_intent": "refund_request",
+  "underlying_reason": "double_charge",
+  "resolution": "refunded",
+  "sentiment_start": -1,
+  "sentiment_end": 1,
+  "churn_risk": 0.1,
+  "quality": {
+    "correctness": 5,
+    "policy_compliance": 5,
+    "tone": 4,
+    "resolved": true
+  },
+  "kb_gap": false,
+  "summary": "The duplicate 4.99 USD charge was refunded. The customer confirmed resolution.",
+  "policy_refs": [
+    "refund-policy#2.2"
+  ]
+}

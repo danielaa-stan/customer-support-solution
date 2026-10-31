@@ -44,10 +44,13 @@ class SupportAgent:
         self.safety_cfg = safety_cfg
         self.transcripts = transcripts
         self.escalated = False
+        self._ended = False
         self.session = Session.start(user_id, cfg.session_id_prefix, prompts.get("system"))
         logger.info("Session %s started for user %s", self.session.session_id, user_id)
 
     def handle(self, text: str) -> AgentTurn:
+        if self._ended:
+            raise ValueError('Start a new session after ending a conversation')
         turn = self._handle_turn(text)
         self.escalated |= turn.needs_human
         self.transcripts.write(self.session)
@@ -55,8 +58,14 @@ class SupportAgent:
 
     def end(self, user_left: bool = False) -> None:
         """Finalise the transcript when the chat is closed."""
+        if self._ended:
+            return
+        if not self.session.events:
+            self._ended = True
+            return
         reason = "escalated" if self.escalated else ("user_left" if user_left else "resolved_by_agent")
         self.transcripts.write(self.session, end_reason=reason)
+        self._ended = True
 
     def _handle_turn(self, text: str) -> AgentTurn:
         s = self.session

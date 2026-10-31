@@ -1,0 +1,6 @@
+title = "Support analytics"
+subtitle = "Post-conversation metrics from the analytics star schema"
+sample_banner = "SAMPLE DATA - synthetic rows generated in memory for preview. Nothing is read from or written to a database."
+empty = "No analyzed conversations in this window yet. End a chat in the support UI; the analytics worker picks it up within seconds."
+db_error = "Could not read the analytics database. Check ANALYTICS_DATABASE_URL and that Docker Postgres is running."
+refund_note = "Refund totals count only verified amounts; {n} automatic refund(s) have no verified amount and are not included."

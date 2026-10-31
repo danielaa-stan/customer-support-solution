@@ -1,6 +1,9 @@
 # Contract changelog
 
 ## Unreleased
+- Add post-chat analytics ingestion with audit-backed outcome validation, transactional star-schema upserts,
+  durable retry checkpoints, and automatic collection while the chat UI is running.
+- Preserve completed transcript finalization and classify terminal exits as customer departures.
 - Include the bonus escalation account and its 23.97 USD payment in generated customer seeds;
   verify the human-escalation flow using the generated seed rather than the fallback seed.
 - Align the backend plan catalog and fallback seed with the Ukraine pricing contract;

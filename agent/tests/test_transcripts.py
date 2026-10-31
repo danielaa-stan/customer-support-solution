@@ -37,6 +37,17 @@ def test_end_sets_reason(agent):
     assert doc["end_reason"] == "resolved_by_agent" and doc["ended_at"]
 
 
+def test_finalization_is_idempotent_and_ended_chats_cannot_continue(agent):
+    agent.handle("Hi")
+    agent.end(user_left=True)
+    before = read(agent)
+    agent.end()
+    assert read(agent) == before
+    assert before["end_reason"] == "user_left"
+    with pytest.raises(ValueError):
+        agent.handle("Another turn")
+
+
 def test_escalated_conversation_ends_as_escalated(settings):
     agent = build_agent(settings, "u_demo_cancel", [FakeProvider()], ScriptedLLM([]))
     agent.handle("I will file a chargeback")
