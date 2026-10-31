@@ -44,12 +44,12 @@ with exactly the same field names as in `schema.sql`.
   ],
   "subscriptions": [
     {"id": "sub_demo_family", "user_id": "u_demo_family", "plan": "individual",
-     "pending_plan": null, "status": "active", "price_amount": 9.99, "price_currency": "USD",
+     "pending_plan": null, "status": "active", "price_amount": 4.99, "price_currency": "USD",
      "started_at": "2026-02-10T09:00:00Z", "next_billing_date": "2026-11-10T09:00:00Z",
      "paused_until": null, "cancel_at": null, "discount_percent": 0, "discount_payments_left": 0}
   ],
   "payments": [
-    {"id": "pay_0001", "user_id": "u_demo_family", "amount": 9.99, "currency": "USD",
+    {"id": "pay_0001", "user_id": "u_demo_family", "amount": 4.99, "currency": "USD",
      "kind": "renewal", "status": "succeeded", "charged_at": "2026-10-10T09:00:00Z",
      "refunded_at": null, "refund_reason": null}
   ],

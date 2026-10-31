@@ -8,7 +8,7 @@ INSERT INTO users (id, name, email, country, is_student, created_at)
 VALUES ('u_schema_check', 'Schema Check', 'schema-check@example.com', 'UA', 0,
         '2026-10-31T14:00:00+02:00');
 INSERT INTO payments (id, user_id, amount, kind, status, charged_at)
-VALUES ('pay_schema_check', 'u_schema_check', 9.99, 'renewal', 'succeeded',
+VALUES ('pay_schema_check', 'u_schema_check', 4.99, 'renewal', 'succeeded',
         '2026-10-31T12:00:00Z');
 INSERT INTO retention_offers_used (user_id, offer_code, applied_at)
 VALUES ('u_schema_check', 'discount_50_3m', '2026-10-31T12:00:00Z');
@@ -20,12 +20,12 @@ BEGIN
     RAISE EXCEPTION 'Timestamp did not preserve the UTC instant';
   END IF;
   IF NOT EXISTS (SELECT 1 FROM payments WHERE id = 'pay_schema_check'
-                 AND amount = 9.99::numeric) THEN
+                 AND amount = 4.99::numeric) THEN
     RAISE EXCEPTION 'Monetary value did not round-trip';
   END IF;
   BEGIN
     INSERT INTO payments (id, user_id, amount, kind, status, charged_at)
-    VALUES ('pay_invalid_reference', 'u_missing', 9.99, 'renewal', 'succeeded', now());
+    VALUES ('pay_invalid_reference', 'u_missing', 4.99, 'renewal', 'succeeded', now());
     RAISE EXCEPTION 'Missing foreign key was accepted';
   EXCEPTION WHEN foreign_key_violation THEN
     NULL;

@@ -17,12 +17,16 @@ A implements them in the safety guard, C includes them in policies (`data/polici
 
 ## Plans
 
+The demo uses Ukraine regular monthly prices in USD, as provided in the reference screenshots.
+These prices apply to the demo catalog regardless of a synthetic customer's country field.
+Introductory free-month promotions are not included in this regular-price catalog.
+
 | Plan | Price (USD/month) | Seats | Note |
 |------|----------------|-------|----------|
-| `individual` | 9.99 | 1 | |
-| `duo` | 12.99 | 2 | |
-| `family` | 15.99 | 6 | |
-| `student` | 4.99 | 1 | only if `is_student = 1` |
+| `individual` | 4.99 | 1 | |
+| `duo` | 6.49 | 2 | |
+| `family` | 7.99 | 6 | |
+| `student` | 2.49 | 1 | only if `is_student = 1` |
 
 ## Retention offers
 

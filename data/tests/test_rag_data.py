@@ -172,6 +172,10 @@ class RagDataTests(unittest.TestCase):
         spec = importlib.util.spec_from_file_location("generate_cases", DATA / "generate_cases.py")
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
+        contract = (CONTRACTS / "04-business-rules.md").read_text(encoding="utf-8")
+        for plan, price in module.PLANS:
+            expected = re.search(rf"\| `{plan}` \| ([\d.]+) \|", contract)[1]
+            self.assertEqual(price, expected, plan)
         self.assertEqual(module.build_cases(), self.cases)
         self.assertEqual(module.build_cases(), module.build_cases())
 
