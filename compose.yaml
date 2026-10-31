@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      SUPPORT_DB_PASSWORD: ${SUPPORT_DB_PASSWORD:?Set SUPPORT_DB_PASSWORD in .env}
+      SUPPORT_READONLY_PASSWORD: ${SUPPORT_READONLY_PASSWORD:?Set SUPPORT_READONLY_PASSWORD in .env}
+      ANALYTICS_DB_PASSWORD: ${ANALYTICS_DB_PASSWORD:?Set ANALYTICS_DB_PASSWORD in .env}
+      TZ: UTC
+      PGTZ: UTC
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./docker/init-databases.sh:/docker-entrypoint-initdb.d/01-init-databases.sh:ro
+      - ./contracts/schema.sql:/schema.sql:ro
+      - ./analytics/schema.sql:/analytics-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres && psql -U postgres -d support -tAc 'SELECT 1 FROM public.users LIMIT 0' >/dev/null && psql -U postgres -d analytics -tAc 'SELECT 1 FROM public.fact_conversation LIMIT 0' >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+volumes:
+  postgres_data:

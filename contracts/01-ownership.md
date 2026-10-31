@@ -9,7 +9,7 @@
 /data             C: seed data, policies, cases (input for A and B)
 /analytics        C: conversation analyzer, dashboard
 /docs             C: presentation, video script
-/runtime          NOT in git: support.db, analytics.db, transcripts/ (created at runtime)
+/runtime          NOT in git: transcripts/ (created at runtime); databases live in a Docker volume
 ```
 
 ## Who writes and reads what
@@ -19,16 +19,16 @@
 | `contracts/schema.sql` | A (with everyone's agreement) | A, C |
 | `data/seed/seed.json` | C | A (loads into the database) |
 | `data/policies/*.md`, `data/cases.json` | C | B (indexes for RAG) |
-| `runtime/support.db` (tables from `schema.sql`) | **A only** | C: read only (`audit_log`, `tickets`, etc.) |
+| PostgreSQL `support` database (tables from `schema.sql`) | **A only** (`support_app`) | C: read only (`support_reader`; `audit_log`, `tickets`, etc.) |
 | `runtime/transcripts/{session_id}.json` | B | C |
-| `runtime/analytics.db` (`analysis` table) | C | C (dashboard) |
+| PostgreSQL `analytics` database (star schema; `analysis` view) | Analytics service (`analytics_app`) | Dashboard |
 | MCP tools | A | B |
 | RAG tools (`search_policy`, `find_similar_cases`) | B | B (agent) |
 
 Main rules:
 
-1. **Only A writes to `support.db`**. B changes state only through MCP tools.
-2. **C does not write to other owners' files**. The analyzer writes only to `analytics.db`.
+1. **Only A writes to the `support` database**. B changes state only through MCP tools.
+2. **C does not write to other owners' files or tables**. The analyzer writes only to the `analytics` database and reads support data through `support_reader`.
 3. **Do not edit other owners' folders**. If a change is needed, ask the owner.
 4. **Everyone works in their own branch** (`feat/server`, `feat/agent`, `feat/data-analytics`) and merges into `main` through small PRs.
 5. Secrets belong only in `.env` (listed in `.gitignore`). The repository contains `.env.example` without values.
@@ -39,9 +39,10 @@ Main rules:
 | Variable | Default value | Used by |
 |----------|---------------|---------|
 | `GEMINI_API_KEY` | none | B, C (analyzer) |
-| `SUPPORT_DB_PATH` | `runtime/support.db` | A, C (read only) |
+| `SUPPORT_DATABASE_URL` | PostgreSQL URL for `support_app` in database `support` | A |
+| `SUPPORT_READONLY_DATABASE_URL` | PostgreSQL URL for `support_reader` in database `support` | C (read only) |
 | `TRANSCRIPTS_DIR` | `runtime/transcripts` | B, C |
-| `ANALYTICS_DB_PATH` | `runtime/analytics.db` | C |
+| `ANALYTICS_DATABASE_URL` | PostgreSQL URL for `analytics_app` in database `analytics` | C |
 | `DEMO_NOW` | `2026-10-31T12:00:00Z` | A (fixed "current time" for deterministic demos) |
 
 `DEMO_NOW` keeps the refund window (14 days) and seed dates from shifting depending on when the demo runs.

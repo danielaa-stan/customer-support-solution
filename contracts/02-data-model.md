@@ -2,6 +2,11 @@
 
 Source of truth: [schema.sql](schema.sql). This document provides explanations and the seed file format.
 
+Storage: PostgreSQL 18, started through the root `compose.yaml`. JSON field names remain unchanged.
+Dates are ISO 8601 UTC strings in JSON and `TIMESTAMPTZ` in PostgreSQL. Monetary amounts use
+`NUMERIC(10,2)` in PostgreSQL. Keep `is_student` as integer `0` or `1` in seed data.
+Fields ending in `_json` remain JSON-encoded text; callers serialize and parse them explicitly.
+
 ## Entities
 
 | Table | Purpose | Who changes state |
