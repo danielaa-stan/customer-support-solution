@@ -18,6 +18,7 @@ from agent.factory import build_agent  # noqa: E402
 from agent.logging_config import setup_logging  # noqa: E402
 from agent.settings import load_settings  # noqa: E402
 from agent.ui.view_model import chat_messages, cited_policies  # noqa: E402
+from analytics.worker import start_background_worker  # noqa: E402
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -36,6 +37,14 @@ def app_config():
 
 
 settings, ui = app_config()
+
+
+@st.cache_resource
+def analytics_worker():
+    return start_background_worker()
+
+
+analytics_worker()
 T, ICONS = ui["texts"], ui["status_icons"]
 CUSTOMERS = {c["id"]: c for c in ui["customers"]}
 

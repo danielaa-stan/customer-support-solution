@@ -1,0 +1,65 @@
+{
+  "user": {
+    "id": "u_fixture_refund",
+    "country": "UA",
+    "created_at": "2026-05-01T08:00:00Z"
+  },
+  "audit": [
+    {
+      "id": -910003,
+      "ts": "2026-10-31T12:00:00Z",
+      "session_id": "ses_fixture_refund",
+      "user_id": "u_fixture_refund",
+      "tool": "get_user_profile",
+      "args_json": "{}",
+      "result_status": "done",
+      "autonomy_level": "read",
+      "reason_code": null,
+      "policy_ref": null,
+      "actor": "agent",
+      "error_code": null
+    },
+    {
+      "id": -910002,
+      "ts": "2026-10-31T12:00:00Z",
+      "session_id": "ses_fixture_refund",
+      "user_id": "u_fixture_refund",
+      "tool": "issue_refund",
+      "args_json": "{\"payment_id\": \"pay_fixture_refund\", \"reason_code\": \"double_charge\", \"policy_ref\": \"refund-policy#2.2\"}",
+      "result_status": "done",
+      "autonomy_level": "auto",
+      "reason_code": "double_charge",
+      "policy_ref": "refund-policy#2.2",
+      "actor": "agent",
+      "error_code": null
+    },
+    {
+      "id": -910001,
+      "ts": "2026-10-31T12:00:00Z",
+      "session_id": "ses_fixture_refund",
+      "user_id": "u_fixture_refund",
+      "tool": "issue_refund",
+      "args_json": "{\"payment_id\": \"pay_fixture_refund\", \"reason_code\": \"double_charge\", \"policy_ref\": \"refund-policy#2.2\"}",
+      "result_status": "denied",
+      "autonomy_level": "auto",
+      "reason_code": "double_charge",
+      "policy_ref": "refund-policy#2.2",
+      "actor": "agent",
+      "error_code": "ALREADY_DONE"
+    }
+  ],
+  "payments": [
+    {
+      "id": "pay_fixture_refund",
+      "user_id": "u_fixture_refund",
+      "amount": 4.99,
+      "currency": "USD",
+      "kind": "renewal",
+      "status": "refunded",
+      "charged_at": "2026-10-29T08:02:00Z",
+      "refunded_at": "2026-10-31T12:00:00Z",
+      "refund_reason": "double_charge"
+    }
+  ],
+  "pending": []
+}

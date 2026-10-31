@@ -1,5 +1,98 @@
 # Analytics star schema
 
+## Run the analyzer and automatic ingestion
+
+Install the analytics dependencies into the project environment:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r analytics/requirements.txt
+```
+
+The analyzer reads `SUPPORT_READONLY_DATABASE_URL`, writes through `ANALYTICS_DATABASE_URL`,
+and loads the repository `.env`. Model configuration and `GEMINI_API_KEY` are shared with the agent.
+Connections from Windows use the published Docker port; connections from a Compose service use hostname `db`.
+
+Verify the synthetic refund fixture without calling a model or retaining synthetic analytics:
+
+```powershell
+.\.venv\Scripts\python.exe -m analytics.analyzer --fixture analytics/fixtures/refund
+```
+
+Fixture mode always rolls back, including customer dimensions and tool facts. It never populates dashboard data.
+`assessment.json` is a saved synthetic model response, and `source.json` is synthetic audit/payment evidence.
+
+Analyze one real, finalized session manually:
+
+```powershell
+.\.venv\Scripts\python.exe -m analytics.analyzer --transcript runtime/transcripts/SESSION_ID.json --dry-run
+.\.venv\Scripts\python.exe -m analytics.analyzer --transcript runtime/transcripts/SESSION_ID.json
+```
+
+Real analysis uses the configured model and its API quota. `--assessment path/to/result.json` can supply
+a saved assessment instead; it still undergoes validation and audit reconciliation. Dry runs roll back
+database rows, although PostgreSQL identity sequences can advance.
+
+### Automatic collection
+
+The Streamlit application starts one daemon analytics worker via `st.cache_resource` when both database
+URLs are configured. `ANALYTICS_ENABLED=true` is the default; set it to `false` to disable UI auto-start.
+Install `agent/requirements.txt` in the UI's environment; it includes analytics dependencies.
+After **End chat**, the transcript is finalized and picked up on the next scan, normally within five seconds.
+Analysis does not block the UI. Switching customers or starting a new chat also finalizes the previous chat
+as `user_left`; the terminal CLI now uses that reason on exit as well.
+
+The worker only processes finalized, valid JSON files in `TRANSCRIPTS_DIR`. Closing a browser tab or killing
+the process does not guarantee chat finalization; those open transcripts remain pending rather than being
+silently classified as resolved. End the chat explicitly for immediate collection.
+
+For terminal chats, or collection that continues after the UI stops, run a dedicated worker in another terminal:
+
+```powershell
+.\.venv\Scripts\python.exe -m analytics.worker
+# Scan once instead of remaining active:
+.\.venv\Scripts\python.exe -m analytics.worker --once
+```
+
+The worker creates `analytics_ingestion_job`, an operational checkpoint table separate from the star facts.
+It records a content fingerprint, status, attempts, next retry time, and error class, without storing model
+prompts or customer text. A PostgreSQL advisory lock allows only one active worker, including when a UI and
+dedicated worker run together. The state survives process restarts.
+
+Successful, unchanged transcripts are skipped. Changed finalized transcripts are reanalyzed with upserts.
+Failures retry at increasing delays (30 seconds up to five minutes), at most five attempts per content version.
+A failed session does not prevent other sessions from being analyzed. Inspect failures with:
+
+```sql
+SELECT session_id, status, attempts, next_attempt_at, error_code
+FROM analytics_ingestion_job ORDER BY updated_at DESC;
+```
+
+After fixing configuration or bad input, an exhausted job can be explicitly retried:
+
+```sql
+UPDATE analytics_ingestion_job
+SET status = 'queued', attempts = 0, next_attempt_at = now(), error_code = NULL
+WHERE session_id = 'SESSION_ID' AND status = 'failed';
+```
+
+The job checkpoint is written after the fact transaction commits. A crash between them can cause a repeated
+model call, but session/audit upserts prevent duplicate analytics rows. Source audit IDs must still belong to
+one support database instance; do not combine independently reset source databases without extending the keys.
+
+### Verification
+
+```powershell
+$env:RUN_POSTGRES_TESTS = '1'
+.\.venv\Scripts\python.exe -m unittest discover -s analytics/tests -v
+Remove-Item Env:RUN_POSTGRES_TESTS
+```
+
+Integration checks create an isolated schema and roll back all fixtures. They cover repeated ingestion,
+refund totals, stale citation replacement, source-ID collisions, job checkpoints, and rollback after failure.
+Sentiment, churn, and quality remain model estimates; business outcomes are checked against audit evidence.
+Unknown initial plans use the unknown dimension row instead of the account's later plan.
+
 The PostgreSQL `analytics` database contains two stars sharing denormalized dimensions.
 `analytics_app` owns these tables; support data is read through the separate `support_reader` connection.
 The schema stores analytics and copied audit events without modifying the operational database.

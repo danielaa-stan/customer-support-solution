@@ -1,0 +1,87 @@
+{
+  "session_id": "ses_fixture_refund",
+  "user_id": "u_fixture_refund",
+  "started_at": "2026-10-31T12:00:05Z",
+  "ended_at": "2026-10-31T12:01:00Z",
+  "end_reason": "resolved_by_agent",
+  "messages": [
+    {
+      "seq": 1,
+      "role": "user",
+      "ts": "2026-10-31T12:00:06Z",
+      "content": "I was charged twice. Please refund the duplicate."
+    },
+    {
+      "seq": 2,
+      "role": "assistant",
+      "ts": "2026-10-31T12:00:07Z",
+      "content": "",
+      "tool_calls": [
+        {
+          "name": "get_user_profile",
+          "args": {}
+        }
+      ]
+    },
+    {
+      "seq": 3,
+      "role": "tool",
+      "ts": "2026-10-31T12:00:08Z",
+      "content": {
+        "ok": true,
+        "status": "done",
+        "audit_id": -910003,
+        "data": {
+          "subscription": {
+            "plan": "individual"
+          }
+        }
+      },
+      "name": "get_user_profile"
+    },
+    {
+      "seq": 4,
+      "role": "assistant",
+      "ts": "2026-10-31T12:00:09Z",
+      "content": "",
+      "tool_calls": [
+        {
+          "name": "issue_refund",
+          "args": {
+            "payment_id": "pay_fixture_refund",
+            "reason_code": "double_charge",
+            "policy_ref": "refund-policy#2.2"
+          }
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "role": "tool",
+      "ts": "2026-10-31T12:00:10Z",
+      "content": {
+        "ok": true,
+        "status": "done",
+        "audit_id": -910002,
+        "data": {
+          "payment_id": "pay_fixture_refund",
+          "refunded_amount": 4.99,
+          "currency": "USD"
+        }
+      },
+      "name": "issue_refund"
+    },
+    {
+      "seq": 6,
+      "role": "assistant",
+      "ts": "2026-10-31T12:00:11Z",
+      "content": "The duplicate 4.99 USD charge has been refunded under refund-policy#2.2."
+    },
+    {
+      "seq": 7,
+      "role": "user",
+      "ts": "2026-10-31T12:00:12Z",
+      "content": "Thank you, that resolves my request."
+    }
+  ]
+}
