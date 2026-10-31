@@ -124,11 +124,14 @@ public sealed class SubscriptionFlowTests : IDisposable
 
         var upgrade = Parse(_subscriptions.ChangePlan("family", "price_too_high"));
         Assert.Equal("immediately", upgrade.GetProperty("data").GetProperty("effective").GetString());
-        Assert.Equal(15.99, upgrade.GetProperty("data").GetProperty("new_price_amount").GetDouble());
+        Assert.Equal(7.99, upgrade.GetProperty("data").GetProperty("new_price_amount").GetDouble());
+        Assert.Equal(7.99, _h.Query<double>("SELECT price_amount FROM subscriptions WHERE user_id = 'u_demo_family'").Single());
         Assert.Equal("family", _h.Query<string>("SELECT plan FROM subscriptions WHERE user_id = 'u_demo_family'").Single());
 
         var downgrade = Parse(_subscriptions.ChangePlan("duo", "price_too_high"));
         Assert.Equal("next_billing_date", downgrade.GetProperty("data").GetProperty("effective").GetString());
+        Assert.Equal(6.49, downgrade.GetProperty("data").GetProperty("new_price_amount").GetDouble());
+        Assert.Equal(7.99, _h.Query<double>("SELECT price_amount FROM subscriptions WHERE user_id = 'u_demo_family'").Single());
         Assert.Equal("duo", _h.Query<string>("SELECT pending_plan FROM subscriptions WHERE user_id = 'u_demo_family'").Single());
         Assert.Equal("family", _h.Query<string>("SELECT plan FROM subscriptions WHERE user_id = 'u_demo_family'").Single());
 

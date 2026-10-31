@@ -119,3 +119,13 @@ A pre-existing legacy `analysis` table prevents view creation and rolls back thi
 Verification fixtures are transactionally rolled back; identity sequences may advance during checks.
 To roll back application code, stop using these new tables and revert the code changes while retaining the database.
 No destructive down migration is supplied; export any collected facts before considering removal.
+
+For an existing database, apply the current Ukraine price catalog explicitly:
+
+```powershell
+Get-Content -Raw analytics/migrations/001_ukraine_plan_prices.sql | docker compose exec -T db psql -U analytics_app -d analytics -v ON_ERROR_STOP=1
+```
+
+This rerunnable update changes the four current plan prices, preserves their keys, and leaves
+historical refund amounts and operational payment records untouched. Fresh databases receive the
+same catalog from `analytics/schema.sql` during initialization.

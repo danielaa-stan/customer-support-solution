@@ -5,10 +5,10 @@ public static class PlanCatalog
 {
     private static readonly Dictionary<string, double> Prices = new()
     {
-        ["individual"] = 9.99,
-        ["duo"] = 12.99,
-        ["family"] = 15.99,
-        ["student"] = 4.99,
+        ["individual"] = 4.99,
+        ["duo"] = 6.49,
+        ["family"] = 7.99,
+        ["student"] = 2.49,
     };
 
     public static bool IsKnown(string? plan) => plan is not null && Prices.ContainsKey(plan);

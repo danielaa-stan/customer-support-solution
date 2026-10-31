@@ -47,7 +47,7 @@ INSERT INTO fact_tool_call (
 SELECT 2147000001, 'ses_star_refund_check', 20261031, c.customer_key, t.tool_key, p.policy_key,
        '2026-10-31T12:02:00Z', 'done', 'auto', 'agent',
        '{"payment_id":"pay_star_check","reason_code":"double_charge","policy_ref":"refund-policy#2.2"}',
-       'pay_star_check', 9.99, 'USD'
+       'pay_star_check', 4.99, 'USD'
 FROM dim_customer c CROSS JOIN dim_tool t CROSS JOIN dim_policy p
 WHERE c.user_id = 'u_star_check' AND t.tool_name = 'issue_refund' AND p.policy_ref = 'refund-policy#2.2';
 
@@ -107,7 +107,7 @@ BEGIN
       WHERE session_id = 'ses_star_refund_check') <> 2 THEN
     RAISE EXCEPTION 'Policy bridge did not preserve distinct citations';
   END IF;
-  IF (SELECT sum(refunded_amount) FROM fact_tool_call WHERE session_id = 'ses_star_refund_check') <> 9.99 THEN
+  IF (SELECT sum(refunded_amount) FROM fact_tool_call WHERE session_id = 'ses_star_refund_check') <> 4.99 THEN
     RAISE EXCEPTION 'Refund was duplicated during audit reimport';
   END IF;
   IF NOT EXISTS (SELECT 1 FROM analysis WHERE session_id = 'ses_star_unassessed_check'
@@ -158,7 +158,7 @@ BEGIN
       result_status, autonomy_level, actor, args_json, payment_id, refunded_amount, currency
     ) VALUES (
       2147000004, call.session_id, call.date_key, call.customer_key, call.tool_key, call.occurred_at,
-      'done', 'auto', 'agent', call.args_json, call.payment_id, 9.99, 'USD'
+      'done', 'auto', 'agent', call.args_json, call.payment_id, 4.99, 'USD'
     );
     RAISE EXCEPTION 'Same payment was counted as two refunds';
   EXCEPTION WHEN unique_violation THEN NULL;

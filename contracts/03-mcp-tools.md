@@ -80,7 +80,7 @@ Every tool returns JSON in this form:
 ```json
 {
   "user": {"id": "u_...", "name": "...", "country": "UA", "is_student": false},
-  "subscription": {"plan": "individual", "status": "active", "price_amount": 9.99,
+  "subscription": {"plan": "individual", "status": "active", "price_amount": 4.99,
                    "price_currency": "USD", "next_billing_date": "...", "tenure_months": 8,
                    "pending_plan": null, "paused_until": null, "cancel_at": null,
                    "discount_percent": 0},
