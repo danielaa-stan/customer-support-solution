@@ -128,3 +128,16 @@ def test_embedder_waits_on_429_and_succeeds():
                        client=NS(embeddings=NS(create=create)), sleep=slept.append)
     assert e.embed(["a", "b"]).shape == (2, 2)
     assert slept == [3.0]
+
+
+# ---------------------------------------------------------------- evaluation
+from agent.eval.rag_eval import evaluate_retrieval, suggested_min_score  # noqa: E402
+
+
+def test_retrieval_eval_metrics(retriever):
+    report = evaluate_retrieval(retriever, [{"question": "charged twice duplicate", "expected": "refund-policy#2.2"},
+                                            {"question": "one offer per conversation", "expected": "retention-rules#1.3"}],
+                                ["weather forecast tomorrow"], k=3)
+    assert report.hit_at_1 == 1.0 and report.recall_at_k == 1.0 and report.mrr == 1.0
+    assert report.gap_detection_rate == 1.0 and report.false_gap_rate == 0.0
+    assert suggested_min_score(report) is not None
