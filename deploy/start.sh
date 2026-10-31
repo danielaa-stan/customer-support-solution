@@ -6,7 +6,7 @@ cd /app
 
 build_index_with_retries() {
   for attempt in 1 2 3; do
-    echo "[start] Building RAG index (attempt ${attempt}/3, about 3 minutes on the Gemini free tier)..."
+    echo "[start] Building RAG index (attempt ${attempt}/3, provider: ${RAG_EMBEDDING_PROVIDER:-from settings.toml})..."
     if python -m agent.scripts.build_index; then
       echo "[start] RAG index ready. New chats use search_policy and find_similar_cases."
       return 0

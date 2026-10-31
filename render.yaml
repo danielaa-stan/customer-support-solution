@@ -24,3 +24,7 @@ services:
         sync: false                     # people need this code to use the public demo
       - key: DEMO_NOW
         value: "2026-10-31T12:00:00Z"
+      # Offline TF-IDF retrieval on the public demo: no embedding API calls, so the free-tier quota is
+      # kept for the LLM and the index builds in about a second on every (re)start.
+      - key: RAG_EMBEDDING_PROVIDER
+        value: tfidf
