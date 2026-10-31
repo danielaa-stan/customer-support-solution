@@ -13,6 +13,7 @@ LLM **ніколи** не передає `user_id` і не обирає, чий 
 | `sys_set_context` | `session_id: str`, `user_id: str`, `user_turn: int` | на початку чату і перед кожною реплікою користувача (`user_turn` = лічильник повідомлень користувача, з 1) |
 
 Усі інструменти нижче без `sys_set_context` повертають `error.code = "NO_CONTEXT"`.
+`sys_set_context` повертає `NOT_FOUND`, якщо такого користувача немає. Виклики `sys_*` в `audit_log` не пишуться.
 
 ## Єдиний формат відповіді
 
@@ -39,6 +40,16 @@ LLM **ніколи** не передає `user_id` і не обирає, чий 
 | `audit_id` | id запису в `audit_log` |
 
 `error.message` написано так, щоб агент міг переказати причину клієнту. `policy_ref` (якщо є) агент цитує.
+
+### Відповідність кодів і `status`
+
+| `status` | Коди |
+|----------|------|
+| `done` | успіх |
+| `pending_confirmation` | `CONFIRMATION_REQUIRED` (це не помилка, `ok = true`) |
+| `denied` | `POLICY_DENIED`, `NOT_ELIGIBLE`, `ALREADY_DONE`, `CONFIRMATION_INVALID` |
+| `needs_human` | `LIMIT_EXCEEDED` (`needs_human = true`) |
+| `error` | `NO_CONTEXT`, `NOT_FOUND`, `INVALID_ARGUMENT`, `INTERNAL` |
 
 ### Коди помилок
 
@@ -89,7 +100,7 @@ LLM **ніколи** не передає `user_id` і не обирає, чий 
 }
 ```
 
-**`get_payments(limit: int = 10)`** → `data.payments`: масив `{id, amount, currency, kind, status, charged_at, refunded_at, refund_reason}`, від нових до старих. Додатково `data.duplicate_charge_candidates`: масив пар `payment_id`, які виглядають як подвійне списання (див. правила в 04).
+**`get_payments(limit: int = 10)`** → `data.payments`: масив `{id, amount, currency, kind, status, charged_at, refunded_at, refund_reason}`, від нових до старих. Додатково `data.duplicate_charge_candidates`: масив `{payment_id, duplicate_of}`, де `payment_id` це пізніший платіж, схожий на подвійне списання `duplicate_of` (правила в 04). `limit` обмежено діапазоном 1–50.
 
 **`get_available_offers()`** → `data.offers`: масив `{code, title, description, details}` лише тих пропозицій, на які користувач **зараз має право** (сервер сам перевіряє). Агент не вигадує пропозиції.
 
@@ -110,6 +121,8 @@ LLM **ніколи** не передає `user_id` і не обирає, чий 
 
 **`issue_refund(payment_id: str, reason_code: str, policy_ref: str)`** · `auto` / `human_only` залежно від правил
 - Умови й ліміти: [04-business-rules.md](04-business-rules.md).
+- `policy_ref` обов'язковий і має формат `doc_id#розділ` (напр. `refund-policy#2.2`). Агент цитує політику, на яку спирається.
+- Якщо `reason_code = double_charge`, сервер перевіряє, що платіж справді є дублем. Інакше `POLICY_DENIED` (`refund-policy#2.2`).
 - Успіх: `data`: `{payment_id, refunded_amount, currency}`.
 - Платіж поза вікном: `POLICY_DENIED` (`refund-policy#2.1`).
 - Сума понад автоматичний ліміт: `LIMIT_EXCEEDED`, `needs_human = true`.
