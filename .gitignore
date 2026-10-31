@@ -1,6 +1,19 @@
+# Secrets
 .env
-.venv/
-__pycache__/
-*.py[cod]
-.pytest_cache/
+
+# Runtime data (created when the app runs, see contracts/01-ownership.md)
 runtime/
+
+# Python
+__pycache__/
+*.pyc
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
