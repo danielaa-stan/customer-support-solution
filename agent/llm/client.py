@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass, field, replace
 from typing import Any
@@ -22,6 +23,13 @@ logger = logging.getLogger(__name__)
 
 RETRYABLE_ERRORS = (openai.APIConnectionError, openai.RateLimitError, openai.InternalServerError,
                     openai.APITimeoutError)
+_RETRY_IN = re.compile(r"(?:retry in\s*|retryDelay\W+)([0-9.]+)s", re.I)
+
+
+def retry_after_s(error: Exception, default: float) -> float:
+    """How long the API asks us to wait (from the error text), or `default`."""
+    m = _RETRY_IN.search(str(error)) or _RETRY_IN.search(str(getattr(error, "body", "") or ""))
+    return float(m.group(1)) + 1 if m else default
 
 
 @dataclass
@@ -41,11 +49,15 @@ class LLMReply:
 
 
 class LLMClient:
-    def __init__(self, cfg: LLMSettings, api_key: str, empty_answer_nudge: str, client: Any = None):
+    def __init__(self, cfg: LLMSettings, api_key: str, empty_answer_nudge: str, client: Any = None,
+                 sleep=time.sleep):
         self.cfg = cfg
         self._nudge = empty_answer_nudge
+        self._sleep = sleep
         self._parser = ThoughtParser(cfg.thought_open_tag, cfg.thought_close_tag)
-        self._client = client or openai.OpenAI(base_url=cfg.base_url, api_key=api_key, timeout=cfg.timeout_s)
+        # max_retries=0: the SDK must not retry silently (it burns the free-tier quota); we retry visibly below.
+        self._client = client or openai.OpenAI(base_url=cfg.base_url, api_key=api_key, timeout=cfg.timeout_s,
+                                               max_retries=0)
         logger.info("LLM client ready: model=%s reasoning_effort=%s", cfg.model, cfg.reasoning_effort or "default")
 
     @classmethod
@@ -74,7 +86,7 @@ class LLMClient:
             {"messages": messages, "tools": [t["function"]["name"] for t in tools or []]},
             ensure_ascii=False, default=str))
 
-        attempt = 0
+        attempt = rate_limited = 0
         while True:
             start = time.perf_counter()
             try:
@@ -86,6 +98,15 @@ class LLMClient:
                 logger.warning("Model rejected reasoning_effort=%s (%s); continuing without it.",
                                kwargs.pop("reasoning_effort"), e)
                 self.cfg = replace(self.cfg, reasoning_effort="")
+            except openai.RateLimitError as e:
+                rate_limited += 1
+                if rate_limited > self.cfg.rate_limit_max_retries:
+                    logger.error("LLM quota still exceeded after %d waits: %s", rate_limited - 1, e)
+                    raise
+                wait = retry_after_s(e, self.cfg.rate_limit_wait_s)
+                logger.warning("LLM quota hit (429). Waiting %.0fs (%d/%d).", wait, rate_limited,
+                               self.cfg.rate_limit_max_retries)
+                self._sleep(wait)
             except RETRYABLE_ERRORS as e:
                 if attempt >= self.cfg.max_retries:
                     logger.error("LLM request failed after %d attempts: %s", attempt + 1, e)
@@ -93,7 +114,7 @@ class LLMClient:
                 wait = self.cfg.retry_backoff_s * 2 ** attempt
                 attempt += 1
                 logger.warning("LLM request failed (%s). Retry %d in %.0fs.", type(e).__name__, attempt, wait)
-                time.sleep(wait)
+                self._sleep(wait)
         latency = time.perf_counter() - start
 
         message = resp.choices[0].message

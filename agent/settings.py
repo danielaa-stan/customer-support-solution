@@ -30,6 +30,8 @@ class LLMSettings:
     timeout_s: float
     max_retries: int
     retry_backoff_s: float
+    rate_limit_max_retries: int
+    rate_limit_wait_s: float
     thought_open_tag: str
     thought_close_tag: str
 

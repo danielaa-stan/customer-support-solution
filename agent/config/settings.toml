@@ -11,6 +11,9 @@ temperature = 0.2
 timeout_s = 90.0
 max_retries = 2
 retry_backoff_s = 1.0          # wait before retry n = retry_backoff_s * 2^n
+# Free tier limits requests per minute. On HTTP 429 wait as long as the API asks (or rate_limit_wait_s).
+rate_limit_max_retries = 5
+rate_limit_wait_s = 30.0
 thought_open_tag = "<thought>"
 thought_close_tag = "</thought>"
 

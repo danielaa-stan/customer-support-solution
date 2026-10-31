@@ -45,12 +45,15 @@ class FakeOpenAI:
 
 
 @pytest.fixture()
-def make_client(settings, monkeypatch):
-    monkeypatch.setattr("agent.llm.client.time.sleep", lambda s: None)
+def slept():
+    return []
 
+
+@pytest.fixture()
+def make_client(settings, slept):
     def _make(script, **overrides):
         fake = FakeOpenAI(script)
-        return LLMClient(replace(settings.llm, **overrides), "k", NUDGE, client=fake), fake
+        return LLMClient(replace(settings.llm, **overrides), "k", NUDGE, client=fake, sleep=slept.append), fake
     return _make
 
 
@@ -83,3 +86,21 @@ def test_rejected_reasoning_effort_falls_back(make_client):
     llm, fake = make_client([bad, "ok"], reasoning_effort="low")
     assert llm.chat([{"role": "user", "content": "hi"}]).content == "ok"
     assert "reasoning_effort" in fake.calls[0] and "reasoning_effort" not in fake.calls[1]
+
+
+def quota_error(text="Too many requests"):
+    return openai.RateLimitError(text, response=NS(status_code=429, request=None, headers={}), body=None)
+
+
+def test_rate_limit_waits_as_the_api_asks(make_client, slept):
+    llm, fake = make_client([quota_error("Please retry in 12s"), "ok"])
+    assert llm.chat([{"role": "user", "content": "hi"}]).content == "ok"
+    assert slept == [13.0]
+
+
+def test_rate_limit_uses_default_wait_and_gives_up(make_client, slept, settings):
+    n = settings.llm.rate_limit_max_retries
+    llm, _ = make_client([quota_error()] * (n + 1))
+    with pytest.raises(openai.RateLimitError):
+        llm.chat([{"role": "user", "content": "hi"}])
+    assert slept == [settings.llm.rate_limit_wait_s] * n
