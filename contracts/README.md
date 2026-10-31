@@ -1,35 +1,35 @@
-# Контракти команди: AI Customer Support (music streaming)
+# Team contracts: AI Customer Support (music streaming)
 
-Статус: **DRAFT v0.1**. Після того як усі троє погодили, змінити на **FROZEN v1.0**.
+Status: **DRAFT v0.1**. Once all three team members agree, change to **FROZEN v1.0**.
 
-Ця папка є єдиним спільним місцем для A, B і C. Тут описано, **що** ми передаємо одне одному
-(таблиці, інструменти, формати файлів). **Як** це реалізовано всередині своєї зони, вирішує власник зони.
+This folder is the single shared location for A, B, and C. It describes **what** we exchange
+(tables, tools, file formats). Each area owner decides **how** to implement it within their area.
 
-## Хто є хто
+## Who is who
 
-| Зона | Роль | Папки |
-|------|------|-------|
-| A | Backend / MCP: mock-бекенд, MCP-сервер, safety guard, audit log, тести | `/server` |
-| B | AI-агент + RAG + чат UI | `/agent` |
-| C | Дані, політики, аналізатор розмов, дашборд, презентація | `/data`, `/analytics`, `/docs` |
+| Area | Role | Folders |
+|------|------|---------|
+| A | Backend / MCP: mock backend, MCP server, safety guard, audit log, tests | `/server` |
+| B | AI agent + RAG + chat UI | `/agent` |
+| C | Data, policies, conversation analyzer, dashboard, presentation | `/data`, `/analytics`, `/docs` |
 
-## Порядок читання
+## Reading order
 
-1. [01-ownership.md](01-ownership.md): хто за що відповідає, правила, щоб не перетинатися, чекпоїнти
-2. [02-data-model.md](02-data-model.md) + [schema.sql](schema.sql): таблиці й формат seed-даних
-3. [03-mcp-tools.md](03-mcp-tools.md): інструменти MCP, формат відповідей, помилки, рівні автономності
-4. [04-business-rules.md](04-business-rules.md): єдине джерело правди для чисел і правил (ліміти, вікна, пропозиції)
-5. [05-knowledge-base-format.md](05-knowledge-base-format.md): політики й схожі кейси для RAG
-6. [06-transcript-and-analysis.md](06-transcript-and-analysis.md): формат розмови та результату аналізу
-7. [07-demo-scenarios.md](07-demo-scenarios.md): три демо-сценарії, під які генеруємо дані
+1. [01-ownership.md](01-ownership.md): responsibilities, rules to avoid overlap, checkpoints
+2. [02-data-model.md](02-data-model.md) + [schema.sql](schema.sql): tables and seed data format
+3. [03-mcp-tools.md](03-mcp-tools.md): MCP tools, response format, errors, autonomy levels
+4. [04-business-rules.md](04-business-rules.md): single source of truth for numbers and rules (limits, windows, offers)
+5. [05-knowledge-base-format.md](05-knowledge-base-format.md): policies and similar cases for RAG
+6. [06-transcript-and-analysis.md](06-transcript-and-analysis.md): conversation and analysis result formats
+7. [07-demo-scenarios.md](07-demo-scenarios.md): three demo scenarios for which we generate data
 
-## Правило зміни контрактів
+## Contract change procedure
 
-1. Хочеш змінити контракт: напиши в груповий чат, що саме і чому.
-2. Після згоди зміни вносить один із трьох у гілці `contracts` і додає запис у [CHANGELOG.md](CHANGELOG.md).
-3. Решта підтягує зміни (`git pull`) до того, як їх використовувати.
-4. Після чекпоїнту 13:30 змінювати контракти можна лише у крайньому разі.
+1. To change a contract, describe exactly what and why in the group chat.
+2. After agreement, one of the three makes the changes in the `contracts` branch and adds an entry to [CHANGELOG.md](CHANGELOG.md).
+3. The others pull the changes (`git pull`) before using them.
+4. After the 13:30 checkpoint, contracts may be changed only as a last resort.
 
-## Відкриті питання (потрібне рішення команди)
+## Open questions (team decision needed)
 
-Позначені `OPEN` у документах. Короткий перелік у кінці [01-ownership.md](01-ownership.md).
+Marked `OPEN` in the documents. A short list is at the end of [01-ownership.md](01-ownership.md).

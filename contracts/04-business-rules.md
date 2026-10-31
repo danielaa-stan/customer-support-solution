@@ -1,69 +1,69 @@
-# 04. Бізнес-правила: єдине джерело правди
+# 04. Business rules: single source of truth
 
-Ці значення використовують усі троє:
-A реалізує їх у safety guard, C пише їх у політики (`data/policies`), B цитує їх у відповідях.
-**Якщо число змінюється, воно змінюється тут і у всіх трьох місцях.**
+All three team members use these values:
+A implements them in the safety guard, C includes them in policies (`data/policies`), B cites them in responses.
+**If a number changes, it changes here and in all three places.**
 
-## Константи
+## Constants
 
-| Константа | Значення |
+| Constant | Value |
 |-----------|----------|
-| `REFUND_WINDOW_DAYS` | 14 (від дати списання) |
-| `AUTO_REFUND_LIMIT` | 20.00 USD (вище: лише людина) |
+| `REFUND_WINDOW_DAYS` | 14 (from the charge date) |
+| `AUTO_REFUND_LIMIT` | 20.00 USD (above this: human only) |
 | `PAUSE_MAX_MONTHS` | 3 |
-| `RETENTION_COOLDOWN_MONTHS` | 12 (одна пропозиція утримання на 12 місяців) |
+| `RETENTION_COOLDOWN_MONTHS` | 12 (one retention offer per 12 months) |
 | `DUPLICATE_CHARGE_WINDOW_HOURS` | 24 |
 | `DEMO_NOW` | 2026-10-31T12:00:00Z |
 
-## Плани
+## Plans
 
-| Plan | Ціна (USD/міс) | Місць | Примітка |
+| Plan | Price (USD/month) | Seats | Note |
 |------|----------------|-------|----------|
 | `individual` | 9.99 | 1 | |
 | `duo` | 12.99 | 2 | |
 | `family` | 15.99 | 6 | |
-| `student` | 4.99 | 1 | лише якщо `is_student = 1` |
+| `student` | 4.99 | 1 | only if `is_student = 1` |
 
-## Пропозиції утримання
+## Retention offers
 
-| Код | Що дає | Умови права |
+| Code | Benefit | Eligibility conditions |
 |-----|--------|-------------|
-| `discount_50_3m` | знижка 50% на наступні 3 списання | статус `active`, стаж ≥ 3 місяці, план не `student`, не було пропозицій за `RETENTION_COOLDOWN_MONTHS` |
-| `free_month_1` | 1 безкоштовний місяць | статус `active`, стаж ≥ 12 місяців, не було пропозицій за `RETENTION_COOLDOWN_MONTHS` |
+| `discount_50_3m` | 50% discount on the next 3 charges | status `active`, tenure ≥ 3 months, plan is not `student`, no offers within `RETENTION_COOLDOWN_MONTHS` |
+| `free_month_1` | 1 free month | status `active`, tenure ≥ 12 months, no offers within `RETENTION_COOLDOWN_MONTHS` |
 
-Перехід на дешевший чи спільний план (`duo`, `family`, `student`) пропозицією утримання **не є**, це звичайний `change_plan`.
-Агент може радити його через ціну на людину (Family із 6 місцями).
+Switching to a cheaper or shared plan (`duo`, `family`, `student`) **is not** a retention offer; it is a regular `change_plan`.
+The agent may recommend it based on the price per person (Family with 6 seats).
 
-## Refund
+## Refunds
 
-- Дозволений, якщо платіж `succeeded`, не повернений і від `charged_at` минуло ≤ `REFUND_WINDOW_DAYS`.
-- Сума ≤ `AUTO_REFUND_LIMIT`: виконується автоматично (`auto`).
-- Сума > `AUTO_REFUND_LIMIT`: `LIMIT_EXCEEDED` → агент ескалує (`human_only`).
-- Подвійне списання: два `succeeded` платежі однієї суми одного користувача з різницею ≤ `DUPLICATE_CHARGE_WINDOW_HOURS`. Повертається другий платіж, причина `double_charge`.
+- Allowed if the payment is `succeeded`, has not been refunded, and ≤ `REFUND_WINDOW_DAYS` have elapsed since `charged_at`.
+- Amount ≤ `AUTO_REFUND_LIMIT`: executed automatically (`auto`).
+- Amount > `AUTO_REFUND_LIMIT`: `LIMIT_EXCEEDED` → agent escalates (`human_only`).
+- Duplicate charge: two `succeeded` payments of the same amount by the same user, ≤ `DUPLICATE_CHARGE_WINDOW_HOURS` apart. Refund the second payment with reason `double_charge`.
 
-## Скасування
+## Cancellation
 
-- За замовчуванням `end_of_period`: доступ лишається до `next_billing_date`, нових списань немає.
-- `immediate` не дає refund сам по собі; повернення лише за правилами refund.
-- Скасування завжди потребує явного підтвердження користувача (`confirm`).
-- **Етична політика (без dark patterns):** агент може запропонувати альтернативу **один раз** після того, як з'ясував причину.
-  Якщо користувач повторює бажання скасувати, агент скасовує без нових умовлянь.
+- Default: `end_of_period`; access remains until `next_billing_date`, with no further charges.
+- `immediate` does not automatically grant a refund; refunds follow the refund rules.
+- Cancellation always requires explicit user confirmation (`confirm`).
+- **Ethical policy (no dark patterns):** the agent may offer an alternative **once** after identifying the reason.
+  If the user repeats their wish to cancel, the agent cancels without further persuasion.
 
-## Пауза
+## Pause
 
-- 1–`PAUSE_MAX_MONTHS` місяців, плата не стягується. Підписка автоматично відновлюється після `paused_until`.
+- 1–`PAUSE_MAX_MONTHS` months, with no charges. The subscription automatically resumes after `paused_until`.
 
-## Політики в `data/policies` (обов'язкові документи та якорі)
+## Policies in `data/policies` (required documents and anchors)
 
-Нумерація має збігатися з цією таблицею, бо на неї посилаються сервер і демо-сценарії.
+Numbering must match this table because the server and demo scenarios reference it.
 
-| doc_id | Обов'язкові розділи |
+| doc_id | Required sections |
 |--------|--------------------|
-| `refund-policy` | `2.1` вікно 14 днів · `2.2` подвійне списання · `2.3` автоматичний ліміт і ескалація |
-| `retention-rules` | `1.1` умови права на пропозицію · `1.2` cooldown 12 місяців · `1.3` одна пропозиція за розмову |
-| `cancellation` | `1.1` право скасувати й «одна альтернатива» · `1.2` скасування з кінця періоду |
-| `plans-and-pricing` | `1.1` ціни й місця · `1.2` умови студентського плану · `1.3` зміна плану |
-| `pause-policy` | `1.1` пауза до 3 місяців |
-| `known-issues` | `1.x` типові баги (офлайн, CarPlay, втрата плейлистів, помилка входу) |
-| `escalation-matrix` | `1.1` коли передавати людині · `1.2` пріоритети |
-| `agent-conduct` | `1.1` тон · `1.2` заборона dark patterns · `1.3` не вигадувати правил |
+| `refund-policy` | `2.1` 14-day window · `2.2` duplicate charge · `2.3` automatic limit and escalation |
+| `retention-rules` | `1.1` offer eligibility · `1.2` 12-month cooldown · `1.3` one offer per conversation |
+| `cancellation` | `1.1` right to cancel and "one alternative" · `1.2` cancellation at the end of the period |
+| `plans-and-pricing` | `1.1` prices and seats · `1.2` student plan eligibility · `1.3` plan changes |
+| `pause-policy` | `1.1` pause for up to 3 months |
+| `known-issues` | `1.x` common bugs (offline, CarPlay, lost playlists, login error) |
+| `escalation-matrix` | `1.1` when to hand over to a human · `1.2` priorities |
+| `agent-conduct` | `1.1` tone · `1.2` ban on dark patterns · `1.3` do not invent rules |

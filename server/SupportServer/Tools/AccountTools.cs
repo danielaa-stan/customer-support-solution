@@ -6,7 +6,7 @@ using SupportServer.Domain;
 
 namespace SupportServer.Tools;
 
-/// <summary>Тонкий шар MCP: опис інструмента + делегування. Уся логіка живе в сервісах.</summary>
+/// <summary>Thin MCP layer: tool description plus delegation. All logic lives in the services.</summary>
 [McpServerToolType]
 public sealed class AccountTools(ToolRunner runner, AccountService account)
 {

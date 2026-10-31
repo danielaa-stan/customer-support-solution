@@ -4,7 +4,7 @@ using SupportServer.Infrastructure.Db;
 
 namespace SupportServer.Infrastructure.Audit;
 
-/// <summary>Append-only журнал: лише вставка, жодних оновлень чи видалень.</summary>
+/// <summary>Append-only log: inserts only, no updates or deletes.</summary>
 public sealed class SqliteAuditLog(SqliteConnectionFactory db) : IAuditLog
 {
     public long Write(AuditEntry entry)

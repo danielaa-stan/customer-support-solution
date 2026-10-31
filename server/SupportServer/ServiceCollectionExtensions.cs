@@ -11,18 +11,18 @@ namespace SupportServer;
 
 public static class ServiceCollectionExtensions
 {
-    /// <summary>Складання залежностей (composition root). Використовують і Program, і тести.</summary>
+    /// <summary>Dependency wiring (composition root). Used by both Program and the tests.</summary>
     public static IServiceCollection AddSupportServer(this IServiceCollection services, SupportOptions options)
     {
         services.AddSingleton(options);
         services.AddSingleton<IClock>(options.DemoNow is { } now ? new FixedClock(now) : new SystemClock());
         services.AddSingleton(new SqliteConnectionFactory(options.DbPath));
 
-        // Порти й адаптери: заміна реалізації не чіпає решту коду.
+        // Ports and adapters: swapping an implementation does not touch the rest of the code.
         services.AddSingleton<IBillingProvider, MockBillingProvider>();
         services.AddSingleton<IAuditLog, SqliteAuditLog>();
 
-        services.AddSingleton<SessionState>();
+        services.AddSingleton(new SessionState(options.AllowSessionSwitch));
         services.AddSingleton<ToolRunner>();
         services.AddSingleton<AccountService>();
         services.AddSingleton<PaymentService>();

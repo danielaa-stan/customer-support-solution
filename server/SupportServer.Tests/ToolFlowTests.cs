@@ -3,7 +3,7 @@ using SupportServer.Tools;
 
 namespace SupportServer.Tests;
 
-/// <summary>Наскрізні тести: інструмент MCP -> guard -> сервіс -> БД -> audit_log (на dev-seed).</summary>
+/// <summary>End-to-end tests: MCP tool -> guard -> service -> DB -> audit_log (on the dev seed).</summary>
 public sealed class ToolFlowTests : IDisposable
 {
     private readonly TestHarness _h = new();
@@ -43,6 +43,32 @@ public sealed class ToolFlowTests : IDisposable
         var result = TestHarness.Parse(_session.SetContext("ses_test", "u_nobody", 1));
         Assert.False(result.GetProperty("ok").GetBoolean());
         Assert.Equal("NOT_FOUND", result.GetProperty("error").GetProperty("code").GetString());
+    }
+
+    [Fact]
+    public void Context_cannot_be_switched_to_another_user()
+    {
+        Use("u_demo_family");
+
+        var attempt = TestHarness.Parse(_session.SetContext("ses_test", "u_demo_double", 2));
+        Assert.False(attempt.GetProperty("ok").GetBoolean());
+        Assert.Equal("denied", attempt.GetProperty("status").GetString());
+
+        // The session still belongs to the first user.
+        var profile = TestHarness.Parse(_account.GetUserProfile()).GetProperty("data");
+        Assert.Equal("u_demo_family", profile.GetProperty("user").GetProperty("id").GetString());
+    }
+
+    [Fact]
+    public void Turn_counter_can_advance_but_not_go_back()
+    {
+        Use("u_demo_family");
+
+        var forward = TestHarness.Parse(_session.SetContext("ses_test", "u_demo_family", 2));
+        Assert.True(forward.GetProperty("ok").GetBoolean());
+
+        var back = TestHarness.Parse(_session.SetContext("ses_test", "u_demo_family", 1));
+        Assert.False(back.GetProperty("ok").GetBoolean());
     }
 
     [Fact]

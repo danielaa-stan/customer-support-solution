@@ -15,6 +15,6 @@ public sealed record AuditEntry(
 
 public interface IAuditLog
 {
-    /// <summary>Записує подію й повертає її id.</summary>
+    /// <summary>Writes an event and returns its id.</summary>
     long Write(AuditEntry entry);
 }

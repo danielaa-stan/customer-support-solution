@@ -5,7 +5,7 @@ using SupportServer.Infrastructure.Db;
 
 namespace SupportServer.Infrastructure.Billing;
 
-/// <summary>Імітація білінгу (Spotify не відкриває такі API назовні). Дані лежать у SQLite.</summary>
+/// <summary>Billing simulation (Spotify does not expose such APIs publicly). Data lives in SQLite.</summary>
 public sealed class MockBillingProvider(SqliteConnectionFactory db) : IBillingProvider
 {
     public UserAccount? GetAccount(string userId)

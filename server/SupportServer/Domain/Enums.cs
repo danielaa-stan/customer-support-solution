@@ -2,10 +2,10 @@ using System.Text.Json;
 
 namespace SupportServer.Domain;
 
-/// <summary>Рівні автономності (contracts/03-mcp-tools.md).</summary>
+/// <summary>Autonomy levels (contracts/03-mcp-tools.md).</summary>
 public enum AutonomyLevel { Read, Auto, Confirm, HumanOnly }
 
-/// <summary>Поле status у відповіді інструмента.</summary>
+/// <summary>The status field of a tool response.</summary>
 public enum ResultStatus { Done, PendingConfirmation, Denied, NeedsHuman, Error }
 
 public static class EnumExtensions

@@ -1,21 +1,21 @@
-# 02. Модель даних і seed
+# 02. Data model and seed data
 
-Джерело правди: [schema.sql](schema.sql). Тут пояснення та формат seed-файлу.
+Source of truth: [schema.sql](schema.sql). This document provides explanations and the seed file format.
 
-## Сутності
+## Entities
 
-| Таблиця | Призначення | Хто змінює стан |
+| Table | Purpose | Who changes state |
 |---------|-------------|-----------------|
-| `users` | профіль клієнта | seed |
-| `subscriptions` | план, статус, знижки, дата наступного списання | інструменти MCP |
-| `payments` | історія списань і повернень | seed + `issue_refund` |
-| `usage_stats` | прослуховування за 30 днів, пристрої | seed |
-| `retention_offers_used` | які пропозиції утримання вже застосовано | `apply_retention_offer` |
-| `tickets` | ескалації для агента-людини | `escalate_to_human` |
-| `pending_actions` | дії, що чекають підтвердження | інструменти рівня `confirm` |
-| `audit_log` | кожен виклик інструмента | сервер автоматично |
+| `users` | customer profile | seed |
+| `subscriptions` | plan, status, discounts, next billing date | MCP tools |
+| `payments` | charge and refund history | seed + `issue_refund` |
+| `usage_stats` | listening over 30 days, devices | seed |
+| `retention_offers_used` | retention offers already applied | `apply_retention_offer` |
+| `tickets` | escalations to a human agent | `escalate_to_human` |
+| `pending_actions` | actions awaiting confirmation | `confirm`-level tools |
+| `audit_log` | every tool call | server automatically |
 
-## Enum-значення
+## Enum values
 
 - `plan`: `individual`, `duo`, `family`, `student`
 - `subscription.status`: `active`, `paused`, `canceled`, `past_due`
@@ -24,17 +24,17 @@
 - `ticket.priority`: `low`, `normal`, `high`, `urgent`
 - `autonomy_level`: `read`, `auto`, `confirm`, `human_only`
 - `result_status`: `done`, `pending_confirmation`, `denied`, `needs_human`, `error`
-- `reason_code`, `intent`: див. [06-transcript-and-analysis.md](06-transcript-and-analysis.md)
+- `reason_code`, `intent`: see [06-transcript-and-analysis.md](06-transcript-and-analysis.md)
 
-## Seed-файл: `data/seed/seed.json` (пише C, завантажує A)
+## Seed file: `data/seed/seed.json` (written by C, loaded by A)
 
-Структура: об'єкт, де ключі збігаються з назвами таблиць, значення: масиви рядків таблиці
-з точно такими самими іменами полів, як у `schema.sql`.
+Structure: an object whose keys match table names and whose values are arrays of table rows
+with exactly the same field names as in `schema.sql`.
 
 ```json
 {
   "users": [
-    {"id": "u_demo_family", "name": "Олена Коваль", "email": "olena@example.com",
+    {"id": "u_demo_family", "name": "Olena Koval", "email": "olena@example.com",
      "country": "UA", "is_student": 0, "created_at": "2026-02-10T09:00:00Z"}
   ],
   "subscriptions": [
@@ -56,10 +56,10 @@
 }
 ```
 
-Правила для seed:
+Seed data rules:
 
-1. Усі дати відносно `DEMO_NOW = 2026-10-31T12:00:00Z`.
-2. Обов'язково три демо-користувачі з [07-demo-scenarios.md](07-demo-scenarios.md) із зафіксованими ID.
-3. Додатково 30–50 «фонових» користувачів з різними планами, станами та історією платежів.
-4. `tickets`, `pending_actions`, `audit_log` у seed порожні (їх створює робота системи).
-5. A пише `server/SupportServer/Db/SeedLoader.cs`, який перевіряє seed за схемою й падає з зрозумілою помилкою.
+1. All dates are relative to `DEMO_NOW = 2026-10-31T12:00:00Z`.
+2. The three demo users from [07-demo-scenarios.md](07-demo-scenarios.md) with fixed IDs are required.
+3. Additionally, 30–50 "background" users with various plans, statuses, and payment histories.
+4. `tickets`, `pending_actions`, and `audit_log` are empty in the seed data (populated during system operation).
+5. A writes `server/seed_loader.py`, which validates the seed data against the schema and fails with a clear error.

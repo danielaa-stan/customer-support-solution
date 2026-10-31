@@ -2,7 +2,7 @@ using SupportServer.Domain;
 
 namespace SupportServer.Application;
 
-/// <summary>Коди помилок (contracts/03-mcp-tools.md).</summary>
+/// <summary>Error codes (contracts/03-mcp-tools.md).</summary>
 public static class ErrorCodes
 {
     public const string NoContext = "NO_CONTEXT";
@@ -20,8 +20,8 @@ public static class ErrorCodes
 public sealed record ToolError(string Code, string Message, string? PolicyRef = null);
 
 /// <summary>
-/// Результат роботи сервісу. Сервіси повертають його, а не кидають винятки для бізнес-відмов.
-/// ToolRunner перетворює його на відповідь MCP та запис в audit_log.
+/// Result of a service call. Services return it instead of throwing exceptions for business refusals.
+/// ToolRunner turns it into an MCP response and an audit_log record.
 /// </summary>
 public sealed class ToolOutcome
 {
@@ -32,7 +32,7 @@ public sealed class ToolOutcome
     public string? ReasonCode { get; private init; }
     public string? PolicyRef { get; private init; }
 
-    /// <summary>Якщо задано, перекриває рівень автономності, оголошений інструментом (для audit_log).</summary>
+    /// <summary>When set, overrides the autonomy level declared by the tool (for audit_log).</summary>
     public AutonomyLevel? LevelOverride { get; private init; }
 
     public bool Ok => Status is ResultStatus.Done or ResultStatus.PendingConfirmation;
@@ -44,18 +44,18 @@ public sealed class ToolOutcome
         new() { Status = ResultStatus.PendingConfirmation, Data = data, ReasonCode = reasonCode, PolicyRef = policyRef,
                 LevelOverride = AutonomyLevel.Confirm };
 
-    /// <summary>Політика або стан забороняє дію (status = denied).</summary>
+    /// <summary>A policy or the current state forbids the action (status = denied).</summary>
     public static ToolOutcome Denied(string code, string message, string? policyRef = null, string? reasonCode = null) =>
         new() { Status = ResultStatus.Denied, Error = new ToolError(code, message, policyRef),
                 ReasonCode = reasonCode, PolicyRef = policyRef };
 
-    /// <summary>Дію можна виконати лише людині (status = needs_human).</summary>
+    /// <summary>Only a human can perform the action (status = needs_human).</summary>
     public static ToolOutcome HumanRequired(string code, string message, string? policyRef = null, string? reasonCode = null) =>
         new() { Status = ResultStatus.NeedsHuman, Error = new ToolError(code, message, policyRef),
                 NeedsHuman = true, ReasonCode = reasonCode, PolicyRef = policyRef,
                 LevelOverride = AutonomyLevel.HumanOnly };
 
-    /// <summary>Неправильні дані або збій (status = error).</summary>
+    /// <summary>Invalid input or a failure (status = error).</summary>
     public static ToolOutcome Fail(string code, string message, string? reasonCode = null) =>
         new() { Status = ResultStatus.Error, Error = new ToolError(code, message), ReasonCode = reasonCode };
 }

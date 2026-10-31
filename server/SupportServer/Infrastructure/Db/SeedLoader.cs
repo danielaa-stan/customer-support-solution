@@ -4,8 +4,8 @@ using Microsoft.Data.Sqlite;
 namespace SupportServer.Infrastructure.Db;
 
 /// <summary>
-/// Завантажує seed.json (формат у contracts/02-data-model.md). Ключі верхнього рівня = назви таблиць,
-/// поля = назви колонок. Назви перевіряються за схемою, тому помилка в seed дає зрозуміле повідомлення.
+/// Loads seed.json (format: contracts/02-data-model.md). Top-level keys are table names,
+/// fields are column names. Names are checked against the schema, so a mistake in the seed gives a clear message.
 /// </summary>
 public static class SeedLoader
 {

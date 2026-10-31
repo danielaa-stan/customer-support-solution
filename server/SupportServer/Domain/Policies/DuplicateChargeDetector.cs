@@ -2,11 +2,11 @@ using SupportServer.Config;
 
 namespace SupportServer.Domain.Policies;
 
-/// <param name="PaymentId">Пізніший платіж, схожий на дубль.</param>
-/// <param name="DuplicateOf">Перший платіж, дублем якого він виглядає.</param>
+/// <param name="PaymentId">The later payment that looks like a duplicate.</param>
+/// <param name="DuplicateOf">The earlier payment it appears to duplicate.</param>
 public sealed record DuplicatePair(string PaymentId, string DuplicateOf);
 
-/// <summary>Два успішні платежі однієї суми, валюти й типу з різницею у часі до 24 годин.</summary>
+/// <summary>Two successful payments with the same amount, currency and kind, at most 24 hours apart.</summary>
 public static class DuplicateChargeDetector
 {
     public static IReadOnlyList<DuplicatePair> Find(IEnumerable<Payment> payments)

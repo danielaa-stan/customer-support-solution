@@ -1,6 +1,6 @@
 namespace SupportServer.Domain;
 
-// Моделі відповідають таблицям з contracts/schema.sql. Dapper мапить snake_case на PascalCase.
+// Models mirror the tables in contracts/schema.sql. Dapper maps snake_case columns to PascalCase properties.
 
 public sealed class User
 {

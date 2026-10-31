@@ -1,7 +1,12 @@
 namespace SupportServer.Config;
 
-/// <summary>Налаштування сервера. Читаються зі змінних оточення (див. contracts/01-ownership.md).</summary>
-public sealed record SupportOptions(string DbPath, string SeedPath, DateTimeOffset? DemoNow)
+/// <summary>Server settings, read from environment variables (see contracts/01-ownership.md).</summary>
+/// <param name="AllowSessionSwitch">Local development only: lets sys_set_context change the user within one process.</param>
+public sealed record SupportOptions(
+    string DbPath,
+    string SeedPath,
+    DateTimeOffset? DemoNow,
+    bool AllowSessionSwitch = false)
 {
     public static SupportOptions FromEnvironment()
     {
@@ -15,11 +20,12 @@ public sealed record SupportOptions(string DbPath, string SeedPath, DateTimeOffs
         }
         else
         {
+            // Prefer the team seed (from zone C); fall back to the small dev seed.
             var teamSeed = RepoPaths.Resolve("data/seed/seed.json");
             seed = File.Exists(teamSeed) ? teamSeed : RepoPaths.Resolve("server/dev-seed.json");
         }
 
-        // DEMO_NOW: ISO-дата, або "real" для справжнього часу. За замовчуванням фіксована демо-дата.
+        // DEMO_NOW: an ISO date, or "real" for the real clock. Defaults to the fixed demo date.
         var demo = Environment.GetEnvironmentVariable("DEMO_NOW");
         DateTimeOffset? now = BusinessRules.DefaultDemoNow;
         if (!string.IsNullOrWhiteSpace(demo))
@@ -29,6 +35,9 @@ public sealed record SupportOptions(string DbPath, string SeedPath, DateTimeOffs
                 : Domain.Iso.Parse(demo);
         }
 
-        return new SupportOptions(db, seed, now);
+        var allowSwitch = string.Equals(
+            Environment.GetEnvironmentVariable("ALLOW_SESSION_SWITCH"), "true", StringComparison.OrdinalIgnoreCase);
+
+        return new SupportOptions(db, seed, now, allowSwitch);
     }
 }

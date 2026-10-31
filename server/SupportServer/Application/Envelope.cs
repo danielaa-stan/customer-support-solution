@@ -4,7 +4,7 @@ using SupportServer.Domain;
 
 namespace SupportServer.Application;
 
-/// <summary>Єдиний формат відповіді кожного інструмента (contracts/03-mcp-tools.md).</summary>
+/// <summary>The common response format of every tool (contracts/03-mcp-tools.md).</summary>
 public sealed record ToolEnvelope(
     bool Ok,
     ResultStatus Status,

@@ -15,7 +15,16 @@ dotnet run --project server/SupportServer -c Release
 dotnet run --project server/SupportServer -c Release -- reset-db
 ```
 
-Змінні оточення (всі необов'язкові): `SUPPORT_DB_PATH`, `SEED_PATH`, `DEMO_NOW` (ISO-дата або `real`).
+Змінні оточення (всі необов'язкові):
+
+| Змінна | За замовчуванням | Призначення |
+|--------|------------------|-------------|
+| `SUPPORT_DB_PATH` | `runtime/support.db` | файл бази |
+| `SEED_PATH` | `data/seed/seed.json`, інакше `server/dev-seed.json` | початкові дані |
+| `DEMO_NOW` | `2026-10-31T12:00:00Z` | «поточний час» для детермінованого демо (`real` = справжній час) |
+| `LOG_LEVEL` | `Information` | `Verbose`, `Debug`, `Information`, `Warning`, `Error` |
+| `LOG_DIR` | `runtime/logs` | папка файлових логів |
+| `ALLOW_SESSION_SWITCH` | `false` | лише для локальної розробки: дозволяє змінювати користувача в одному процесі |
 Seed береться з `data/seed/seed.json` (від C); якщо його ще немає, використовується `server/dev-seed.json`.
 
 ## Архітектура
@@ -55,6 +64,34 @@ Tools  ->  ToolRunner  ->  Services  ->  Domain.Policies (guard)
 | `get_available_offers`, `apply_retention_offer`, `pause_subscription`, `change_plan` | далі |
 | `cancel_subscription`, `confirm_action`, `reject_action` (двокроковий потік) | далі |
 | `escalate_to_human` | далі |
+
+## Логи
+
+Є два різні види, і вони не змішуються:
+
+| | Audit log | Технічний лог |
+|---|-----------|---------------|
+| Для кого | бізнес, дашборд, журі | розробник |
+| Де | таблиця `audit_log` у SQLite | `runtime/logs/server-YYYYMMDD.log` і stderr |
+| Що | хто, що, чому зробив AI | запуск, виклики, відмови, помилки зі стеком |
+
+Технічні логи: Serilog (у коді лишається стандартний `ILogger<T>`, Serilog підключається лише в `Program.cs`).
+`stdout` зарезервований під протокол MCP, тому консоль пише лише в `stderr`. Файли ротуються щодня, зберігається 7 днів.
+
+Один виклик інструмента дає один рядок:
+
+```
+12:04:11 [WRN] issue_refund -> denied POLICY_DENIED refund-policy#2.1 | session=ses_01 user=u_demo_family | 3 ms, audit=128
+```
+
+Рівні: Information (успішні виклики), Warning (відмови політики, `needs_human`, неправильні аргументи), Error (необроблені винятки),
+Debug (аргументи викликів; вмикається через `LOG_LEVEL=Debug`). В логах лише ідентифікатори, без імен, email і ключів.
+
+## Захист контексту сесії
+
+`sys_set_context` викликає лише система (B), модель його не бачить. Додатково сервер після першого виклику не дозволяє
+змінити користувача чи сесію, а `user_turn` може лише зростати. Нова розмова означає новий запуск процесу сервера.
+Для локальних експериментів із кількома користувачами в одному процесі: `ALLOW_SESSION_SWITCH=true`.
 
 ## Як додати інструмент
 

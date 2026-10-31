@@ -7,8 +7,8 @@ public enum RefundVerdict { Allowed, AlreadyRefunded, NotRefundable, WindowExpir
 public sealed record RefundDecision(RefundVerdict Verdict, string? PolicyRef, string Message);
 
 /// <summary>
-/// Чисті детерміновані правила refund (contracts/04-business-rules.md).
-/// Це і є safety guard: модель не може їх «переконати», вони не залежать від промпту.
+/// Pure, deterministic refund rules (contracts/04-business-rules.md).
+/// This is the safety guard: the model cannot "talk it into" anything, because the rules do not depend on the prompt.
 /// </summary>
 public static class RefundPolicy
 {

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Microsoft.Extensions.Logging;
 using ModelContextProtocol.Server;
 using SupportServer.Application;
 using SupportServer.Application.Ports;
@@ -6,7 +7,7 @@ using SupportServer.Application.Ports;
 namespace SupportServer.Tools;
 
 [McpServerToolType]
-public sealed class SessionTools(SessionState session, IBillingProvider billing)
+public sealed class SessionTools(SessionState session, IBillingProvider billing, ILogger<SessionTools> log)
 {
     [McpServerTool(Name = "sys_set_context"),
      Description("СЛУЖБОВИЙ інструмент для системи, не для моделі. Задає користувача й номер репліки поточної сесії.")]
@@ -28,11 +29,23 @@ public sealed class SessionTools(SessionState session, IBillingProvider billing)
         }
         else
         {
-            session.Set(session_id, user_id, user_turn);
-            outcome = ToolOutcome.Done(new { session_id, user_id, user_turn });
+            var change = session.Set(session_id, user_id, user_turn);
+            if (change.Ok)
+            {
+                log.LogInformation("Session context set: session={SessionId} user={UserId} turn={UserTurn}",
+                    session_id, user_id, user_turn);
+                outcome = ToolOutcome.Done(new { session_id, user_id, user_turn });
+            }
+            else
+            {
+                // Someone tried to switch the user or session mid-run: refuse and make noise.
+                log.LogWarning("Rejected session context change: session={SessionId} user={UserId} turn={UserTurn}: {Reason}",
+                    session_id, user_id, user_turn, change.Error);
+                outcome = ToolOutcome.Denied(ErrorCodes.PolicyDenied, change.Error!);
+            }
         }
 
-        // Службові виклики в audit_log не пишуться (див. contracts/03-mcp-tools.md).
+        // Internal calls are not written to audit_log (see contracts/03-mcp-tools.md).
         return Json.ToEnvelopeJson(outcome, null);
     }
 }

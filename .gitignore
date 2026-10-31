@@ -1,4 +1,18 @@
-# runtime-дані та секрети (див. contracts/01-ownership.md)
-runtime/
+# Secrets
 .env
-*.db
+
+# Runtime data (created when the app runs, see contracts/01-ownership.md)
+runtime/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# .NET
+bin/
+obj/
+*.user
+.vs/

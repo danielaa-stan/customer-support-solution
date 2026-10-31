@@ -67,7 +67,7 @@ public sealed partial class PaymentService(IBillingProvider billing, IClock cloc
                 return ToolOutcome.HumanRequired(ErrorCodes.LimitExceeded, decision.Message, decision.PolicyRef, reasonCode);
         }
 
-        // Твердження «подвійне списання» перевіряємо за даними, а не довіряємо моделі.
+        // The "double charge" claim is verified against the data instead of trusting the model.
         if (reasonCode == ReasonCodes.DoubleCharge)
         {
             var isDuplicate = DuplicateChargeDetector

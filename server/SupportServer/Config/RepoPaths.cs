@@ -1,6 +1,6 @@
 namespace SupportServer.Config;
 
-/// <summary>Знаходить корінь репозиторію (папка з contracts/), щоб відносні шляхи не залежали від cwd.</summary>
+/// <summary>Finds the repository root (the folder containing contracts/) so relative paths do not depend on the working directory.</summary>
 public static class RepoPaths
 {
     private static readonly Lazy<string> Root = new(FindRoot);

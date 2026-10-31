@@ -1,8 +1,8 @@
 namespace SupportServer.Config;
 
 /// <summary>
-/// Бізнес-константи. Єдине джерело правди: contracts/04-business-rules.md.
-/// Змінюєш число тут: зміни і в контракті та в політиках (data/policies).
+/// Business constants. Single source of truth: contracts/04-business-rules.md.
+/// If you change a number here, change it in the contract and in the policies (data/policies) too.
 /// </summary>
 public static class BusinessRules
 {
@@ -15,7 +15,7 @@ public static class BusinessRules
     public static readonly DateTimeOffset DefaultDemoNow = new(2026, 10, 31, 12, 0, 0, TimeSpan.Zero);
 }
 
-/// <summary>Якорі політик для цитування (формат doc_id#розділ).</summary>
+/// <summary>Policy anchors for citation (format doc_id#section).</summary>
 public static class PolicyRefs
 {
     public const string RefundWindow = "refund-policy#2.1";

@@ -7,7 +7,7 @@ using SupportServer.Infrastructure.Db;
 
 namespace SupportServer.Tests;
 
-/// <summary>Піднімає сервер у пам'яті процесу: тимчасова БД + dev-seed + фіксований час DEMO_NOW.</summary>
+/// <summary>Boots the server inside the test process: temporary DB + dev seed + fixed DEMO_NOW clock.</summary>
 public sealed class TestHarness : IDisposable
 {
     private readonly string _dbPath = Path.Combine(Path.GetTempPath(), $"support-test-{Guid.NewGuid():N}.db");
@@ -40,6 +40,6 @@ public sealed class TestHarness : IDisposable
     {
         Services.Dispose();
         SqliteConnection.ClearAllPools();
-        try { File.Delete(_dbPath); } catch (IOException) { /* тимчасовий файл */ }
+        try { File.Delete(_dbPath); } catch (IOException) { /* temporary file */ }
     }
 }

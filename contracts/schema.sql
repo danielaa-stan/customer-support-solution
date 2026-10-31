@@ -1,6 +1,6 @@
--- Контракт: схема mock-бази (SQLite). Власник: A. Зміни лише за процедурою з README.
--- Усі дати: ISO 8601 UTC, текст, напр. '2026-10-31T12:00:00Z'.
--- ID: текст з префіксом (u_, sub_, pay_, tkt_, pa_, ses_).
+-- Contract: mock database schema (SQLite). Owner: A. Changes only through the procedure in README.
+-- All dates: ISO 8601 UTC, stored as text, e.g. '2026-10-31T12:00:00Z'.
+-- IDs: text with a prefix (u_, sub_, pay_, tkt_, pa_, ses_).
 
 PRAGMA foreign_keys = ON;
 
@@ -8,8 +8,8 @@ CREATE TABLE users (
   id            TEXT PRIMARY KEY,                -- u_...
   name          TEXT NOT NULL,
   email         TEXT NOT NULL UNIQUE,
-  country       TEXT NOT NULL,                   -- ISO-3166 alpha-2, напр. 'UA'
-  is_student    INTEGER NOT NULL DEFAULT 0,      -- 1 = статус студента підтверджено
+  country       TEXT NOT NULL,                   -- ISO-3166 alpha-2, e.g. 'UA'
+  is_student    INTEGER NOT NULL DEFAULT 0,      -- 1 = student status verified
   created_at    TEXT NOT NULL
 );
 
@@ -17,15 +17,15 @@ CREATE TABLE subscriptions (
   id                 TEXT PRIMARY KEY,           -- sub_...
   user_id            TEXT NOT NULL UNIQUE REFERENCES users(id),
   plan               TEXT NOT NULL CHECK (plan IN ('individual','duo','family','student')),
-  pending_plan       TEXT CHECK (pending_plan IN ('individual','duo','family','student')), -- зміна з наступного списання
+  pending_plan       TEXT CHECK (pending_plan IN ('individual','duo','family','student')), -- change effective at the next billing date
   status             TEXT NOT NULL CHECK (status IN ('active','paused','canceled','past_due')),
-  price_amount       REAL NOT NULL,              -- поточна ціна за період
+  price_amount       REAL NOT NULL,              -- current price per billing period
   price_currency     TEXT NOT NULL DEFAULT 'USD',
   started_at         TEXT NOT NULL,
-  next_billing_date  TEXT,                       -- NULL, якщо canceled
-  paused_until       TEXT,                       -- заповнено, якщо status = 'paused'
-  cancel_at          TEXT,                       -- заповнено, якщо скасування діє з кінця періоду
-  discount_percent   INTEGER NOT NULL DEFAULT 0, -- активна знижка
+  next_billing_date  TEXT,                       -- NULL if canceled
+  paused_until       TEXT,                       -- populated if status = 'paused'
+  cancel_at          TEXT,                       -- populated if cancellation takes effect at the end of the period
+  discount_percent   INTEGER NOT NULL DEFAULT 0, -- active discount
   discount_payments_left INTEGER NOT NULL DEFAULT 0
 );
 
@@ -62,8 +62,8 @@ CREATE TABLE tickets (
   user_id       TEXT NOT NULL REFERENCES users(id),
   session_id    TEXT NOT NULL,
   priority      TEXT NOT NULL CHECK (priority IN ('low','normal','high','urgent')),
-  category      TEXT NOT NULL,                   -- значення з enum intent (див. 06)
-  summary       TEXT NOT NULL,                   -- зведення для агента-людини
+  category      TEXT NOT NULL,                   -- value from the intent enum (see 06)
+  summary       TEXT NOT NULL,                   -- summary for the human agent
   suggested_action_json TEXT,                    -- {"tool":..., "args":{...}, "rationale":..., "policy_ref":...}
   status        TEXT NOT NULL CHECK (status IN ('open','in_progress','closed')) DEFAULT 'open',
   created_at    TEXT NOT NULL
@@ -73,10 +73,10 @@ CREATE TABLE pending_actions (
   id            TEXT PRIMARY KEY,                -- pa_...
   session_id    TEXT NOT NULL,
   user_id       TEXT NOT NULL REFERENCES users(id),
-  tool          TEXT NOT NULL,                   -- напр. 'cancel_subscription'
+  tool          TEXT NOT NULL,                   -- e.g. 'cancel_subscription'
   args_json     TEXT NOT NULL,
-  summary       TEXT NOT NULL,                   -- що саме буде зроблено, людською мовою
-  proposed_at_turn INTEGER NOT NULL,             -- user_turn у момент пропозиції
+  summary       TEXT NOT NULL,                   -- plain-language description of what will be done
+  proposed_at_turn INTEGER NOT NULL,             -- user_turn when the action was proposed
   status        TEXT NOT NULL CHECK (status IN ('pending','confirmed','rejected','expired')) DEFAULT 'pending',
   created_at    TEXT NOT NULL,
   resolved_at   TEXT
@@ -92,8 +92,8 @@ CREATE TABLE audit_log (
   result_status    TEXT NOT NULL CHECK (result_status IN ('done','pending_confirmation','denied','needs_human','error')),
   error_code       TEXT,
   autonomy_level   TEXT NOT NULL CHECK (autonomy_level IN ('read','auto','confirm','human_only')),
-  reason_code      TEXT,                         -- причина, яку вказав агент (enum із 06)
-  policy_ref       TEXT,                         -- напр. 'refund-policy#2.1'
+  reason_code      TEXT,                         -- reason provided by the agent (enum from 06)
+  policy_ref       TEXT,                         -- e.g. 'refund-policy#2.1'
   actor            TEXT NOT NULL CHECK (actor IN ('agent','human','system')) DEFAULT 'agent'
 );
 CREATE INDEX idx_audit_session ON audit_log(session_id, ts);
