@@ -1,69 +1,70 @@
-# 01. Власність і правила співпраці
+# 01. Ownership and collaboration rules
 
-## Карта репозиторію
+## Repository map
 
 ```
-/contracts        спільне, правиться лише за процедурою з README
-/server           A: MCP-сервер, mock-бекенд, safety guard, audit, тести
-/agent            B: цикл агента, промпт, RAG-інструменти, чат UI
-/data             C: seed-дані, політики, кейси (вхід для A і B)
-/analytics        C: аналізатор розмов, дашборд
-/docs             C: презентація, сценарій відео
-/runtime          НЕ в git: support.db, analytics.db, transcripts/ (створюється під час роботи)
+/contracts        shared; edited only through the procedure in README
+/server           A: MCP server, mock backend, safety guard, audit, tests
+/agent            B: agent loop, prompt, RAG tools, chat UI
+/data             C: seed data, policies, cases (input for A and B)
+/analytics        C: conversation analyzer, dashboard
+/docs             C: presentation, video script
+/runtime          NOT in git: support.db, analytics.db, transcripts/ (created at runtime)
 ```
 
-## Хто що пише і читає
+## Who writes and reads what
 
-| Артефакт | Пише | Читає |
-|----------|------|-------|
-| `contracts/schema.sql` | A (за згодою всіх) | A, C |
-| `data/seed/seed.json` | C | A (завантажує в БД) |
-| `data/policies/*.md`, `data/cases.json` | C | B (індексує для RAG) |
-| `runtime/support.db` (таблиці з `schema.sql`) | **тільки A** | C: лише читання (`audit_log`, `tickets` та ін.) |
+| Artifact | Writer | Reader |
+|----------|--------|--------|
+| `contracts/schema.sql` | A (with everyone's agreement) | A, C |
+| `data/seed/seed.json` | C | A (loads into the database) |
+| `data/policies/*.md`, `data/cases.json` | C | B (indexes for RAG) |
+| `runtime/support.db` (tables from `schema.sql`) | **A only** | C: read only (`audit_log`, `tickets`, etc.) |
 | `runtime/transcripts/{session_id}.json` | B | C |
-| `runtime/analytics.db` (таблиця `analysis`) | C | C (дашборд) |
-| Інструменти MCP | A | B |
-| RAG-інструменти (`search_policy`, `find_similar_cases`) | B | B (агент) |
+| `runtime/analytics.db` (`analysis` table) | C | C (dashboard) |
+| MCP tools | A | B |
+| RAG tools (`search_policy`, `find_similar_cases`) | B | B (agent) |
 
-Головні правила:
+Main rules:
 
-1. **Ніхто, окрім A, не пише в `support.db`**. B змінює стан тільки через інструменти MCP.
-2. **C не пише в чужі файли**. Аналізатор пише лише у `analytics.db`.
-3. **Чужі папки не редагуємо**. Потрібна зміна: попроси власника.
-4. **Кожен працює у своїй гілці** (`feat/server`, `feat/agent`, `feat/data-analytics`) і мерджить у `main` невеликими PR.
-5. Секрети лише в `.env` (він у `.gitignore`). У репозиторії є `.env.example` без значень.
+1. **Only A writes to `support.db`**. B changes state only through MCP tools.
+2. **C does not write to other owners' files**. The analyzer writes only to `analytics.db`.
+3. **Do not edit other owners' folders**. If a change is needed, ask the owner.
+4. **Everyone works in their own branch** (`feat/server`, `feat/agent`, `feat/data-analytics`) and merges into `main` through small PRs.
+5. Secrets belong only in `.env` (listed in `.gitignore`). The repository contains `.env.example` without values.
+6. **Everything must be in English**: code comments, documentation, policies, seed data text, examples, prompts, user messages, agent responses, and UI text.
 
-## Спільна конфігурація (`.env.example`)
+## Shared configuration (`.env.example`)
 
-| Змінна | Значення за замовчуванням | Хто використовує |
-|--------|---------------------------|------------------|
-| `GEMINI_API_KEY` | немає | B, C (аналізатор) |
-| `SUPPORT_DB_PATH` | `runtime/support.db` | A, C (читання) |
+| Variable | Default value | Used by |
+|----------|---------------|---------|
+| `GEMINI_API_KEY` | none | B, C (analyzer) |
+| `SUPPORT_DB_PATH` | `runtime/support.db` | A, C (read only) |
 | `TRANSCRIPTS_DIR` | `runtime/transcripts` | B, C |
 | `ANALYTICS_DB_PATH` | `runtime/analytics.db` | C |
-| `DEMO_NOW` | `2026-10-31T12:00:00Z` | A (фіксований «поточний час» для детермінованих демо) |
+| `DEMO_NOW` | `2026-10-31T12:00:00Z` | A (fixed "current time" for deterministic demos) |
 
-`DEMO_NOW` потрібен, щоб вікно refund (14 днів) і дати в seed-даних не «пливли» залежно від того, коли запускаємо демо.
+`DEMO_NOW` keeps the refund window (14 days) and seed dates from shifting depending on when the demo runs.
 
-## Як A і B з'єднуються
+## How A and B connect
 
-- Транспорт MCP: **stdio**. B запускає сервер підпроцесом: `python -m server.mcp_server`.
-- Одна сесія чату = один запуск (або один контекст) сервера. Деталі контексту сесії в [03-mcp-tools.md](03-mcp-tools.md).
+- MCP transport: **stdio**. B starts the server as a subprocess: `python -m server.mcp_server`.
+- One chat session = one server run (or one server context). Session context details are in [03-mcp-tools.md](03-mcp-tools.md).
 
-## Чекпоїнти
+## Checkpoints
 
-| Час | Що має бути готово |
-|-----|--------------------|
-| 12:15 | Контракти погоджено (FROZEN v1.0), seed-схема і перші 3 інструменти (`get_user_profile`, `get_payments`, `issue_refund`) |
-| 13:30 | Агент проходить 3 демо-сценарії end-to-end |
-| 15:00 | Дашборд готовий |
-| 15:45 | Код заморожено, запис відео |
-| 17:00 | Дедлайн здачі (презентація + ZIP з кодом) |
+| Time | What must be ready |
+|------|--------------------|
+| 12:15 | Contracts agreed (FROZEN v1.0), seed schema, and the first 3 tools (`get_user_profile`, `get_payments`, `issue_refund`) |
+| 13:30 | Agent completes 3 demo scenarios end to end |
+| 15:00 | Dashboard ready |
+| 15:45 | Code freeze, video recording |
+| 17:00 | Submission deadline (presentation + code ZIP) |
 
-## OPEN: питання, які треба вирішити разом
+## OPEN: questions to resolve together
 
-1. Рівні автономності та ліміти (див. [04-business-rules.md](04-business-rules.md)): чи підходять значення за замовчуванням.
-2. Чи лишається RAG у зоні B (рекомендовано) чи переносимо в MCP-сервер.
-3. Підтвердження ризикових дій: двокроковий потік через `confirm_action` (запропоновано) чи кнопка в UI.
-4. Власність формату транскрипта й `analysis` (запропоновано: B транскрипт, C аналіз).
-5. Назва вигаданого продукту і його брендинг для демо.
+1. Autonomy levels and limits (see [04-business-rules.md](04-business-rules.md)): whether the defaults are suitable.
+2. Whether RAG stays in B's area (recommended) or moves to the MCP server.
+3. Confirmation of risky actions: a two-step flow through `confirm_action` (proposed) or a UI button.
+4. Ownership of the transcript format and `analysis` (proposed: B owns transcripts, C owns analysis).
+5. Name and branding of the fictional product for the demo.

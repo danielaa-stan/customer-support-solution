@@ -1,20 +1,20 @@
-# 06. Транскрипт розмови та результат аналізу
+# 06. Conversation transcript and analysis result
 
-## Спільні enum
+## Shared enums
 
-`intent` (основний намір):
+`intent` (primary intent):
 `cancel_subscription`, `billing_issue`, `refund_request`, `plan_change`, `technical_issue`, `account_access`, `other`
 
-`reason_code` (справжня причина; використовують і інструменти A, і аналізатор C):
+`reason_code` (underlying reason; used by both A's tools and C's analyzer):
 `price_too_high`, `low_usage`, `technical_problems`, `switching_competitor`, `double_charge`,
 `billing_confusion`, `temporary_break`, `other`, `unknown`
 
-`resolution` (результат розмови):
-`resolved_auto` (AI вирішив сам), `retained` (клієнта утримано), `canceled`, `refunded`, `escalated`, `abandoned`
+`resolution` (conversation outcome):
+`resolved_auto` (resolved by AI independently), `retained` (customer retained), `canceled`, `refunded`, `escalated`, `abandoned`
 
-## Транскрипт: `runtime/transcripts/{session_id}.json` (пише B, читає C)
+## Transcript: `runtime/transcripts/{session_id}.json` (written by B, read by C)
 
-B записує файл, коли розмова завершилась (користувач пішов, проблему вирішено, ескалація). Також дозволено перезаписувати файл під час розмови.
+B writes the file when the conversation ends (user left, issue resolved, escalation). The file may also be overwritten during the conversation.
 
 ```json
 {
@@ -25,9 +25,9 @@ B записує файл, коли розмова завершилась (ко�
   "end_reason": "resolved_by_agent",
   "messages": [
     {"seq": 1, "role": "user", "ts": "2026-10-31T12:00:05Z",
-     "content": "Дуже дорого стало, хочу скасувати підписку."},
+     "content": "It has become too expensive. I want to cancel my subscription."},
     {"seq": 2, "role": "assistant", "ts": "2026-10-31T12:00:09Z",
-     "content": "Розумію. Дозвольте подивитися ваш акаунт ...",
+     "content": "I understand. Let me check your account ...",
      "tool_calls": [{"name": "get_user_profile", "args": {}}]},
     {"seq": 3, "role": "tool", "ts": "2026-10-31T12:00:10Z",
      "name": "get_user_profile", "content": {"ok": true, "status": "done"}}
@@ -35,39 +35,39 @@ B записує файл, коли розмова завершилась (ко�
 }
 ```
 
-Правила:
+Rules:
 
 - `role`: `user` | `assistant` | `tool` | `system`.
 - `end_reason`: `resolved_by_agent` | `escalated` | `user_left`.
-- `seq` починається з 1 і зростає. `content` повідомлень `tool` містить фактичну відповідь інструмента (можна скорочувати великі поля).
-- Виконані дії C бере **не з транскрипта, а з `audit_log`** (джерело правди про виконане). Транскрипт потрібен для тексту розмови.
+- `seq` starts at 1 and increases. The `content` of `tool` messages contains the actual tool response (large fields may be shortened).
+- C obtains executed actions **from `audit_log`, not from the transcript** (the source of truth for executed actions). The transcript provides the conversation text.
 
-## Результат аналізу: таблиця `analysis` у `runtime/analytics.db` (власник C)
+## Analysis result: `analysis` table in `runtime/analytics.db` (owned by C)
 
-Один рядок на сесію. B і A цю таблицю не використовують.
+One row per session. B and A do not use this table.
 
-| Поле | Тип | Опис |
+| Field | Type | Description |
 |------|-----|------|
 | `session_id` | TEXT PK | |
 | `user_id` | TEXT | |
 | `primary_intent` | TEXT | enum `intent` |
-| `underlying_reason` | TEXT | enum `reason_code` (справжня причина, може відрізнятися від сказаного) |
-| `sentiment_start` | INTEGER | −2 (дуже негативний) … +2 (дуже позитивний) |
-| `sentiment_end` | INTEGER | те саме |
-| `churn_risk` | REAL | 0.0 – 1.0 після розмови |
+| `underlying_reason` | TEXT | enum `reason_code` (underlying reason, which may differ from what was stated) |
+| `sentiment_start` | INTEGER | −2 (very negative) … +2 (very positive) |
+| `sentiment_end` | INTEGER | same as above |
+| `churn_risk` | REAL | 0.0 – 1.0 after the conversation |
 | `resolution` | TEXT | enum `resolution` |
-| `actions_json` | TEXT | список виконаних дій (береться з `audit_log`) |
-| `policy_refs_json` | TEXT | використані політики |
-| `quality_json` | TEXT | оцінка якості відповіді AI: `{"correctness":1-5,"policy_compliance":1-5,"tone":1-5,"resolved":true}` |
-| `kb_gap` | INTEGER | 1, якщо агент не знайшов відповіді в базі знань |
-| `summary` | TEXT | 1–2 речення для дашборду |
+| `actions_json` | TEXT | list of executed actions (from `audit_log`) |
+| `policy_refs_json` | TEXT | policies used |
+| `quality_json` | TEXT | AI response quality score: `{"correctness":1-5,"policy_compliance":1-5,"tone":1-5,"resolved":true}` |
+| `kb_gap` | INTEGER | 1 if the agent found no answer in the knowledge base |
+| `summary` | TEXT | 1–2 sentences for the dashboard |
 | `analyzed_at` | TEXT | ISO 8601 |
 
-## Що показує дашборд (мінімум)
+## What the dashboard shows (minimum)
 
-1. Топ причин скасування (`underlying_reason`).
-2. Частка розмов, вирішених AI самостійно, проти ескальованих.
-3. Скільки клієнтів утримано і яка пропозиція спрацювала.
-4. Кількість і сума автоматичних refund.
-5. Середня якість відповідей AI та прогалини в базі знань (`kb_gap`).
-6. Журнал дій AI (з `audit_log`) для вибраної розмови.
+1. Top cancellation reasons (`underlying_reason`).
+2. Proportion of conversations resolved independently by AI versus escalated.
+3. Number of customers retained and which offer worked.
+4. Number and total amount of automatic refunds.
+5. Average AI response quality and knowledge base gaps (`kb_gap`).
+6. AI action log (from `audit_log`) for the selected conversation.

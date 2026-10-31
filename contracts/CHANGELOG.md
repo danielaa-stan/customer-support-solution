@@ -1,5 +1,8 @@
-# Changelog контрактів
+# Contract changelog
+
+## Unreleased
+- Require English for all project content and translate the remaining examples.
 
 ## v0.1 (draft)
-- Перша версія: власність зон, модель даних, інструменти MCP, бізнес-правила,
-  формат бази знань, транскрипт і аналіз, демо-сценарії.
+- Initial version: area ownership, data model, MCP tools, business rules,
+  knowledge base format, transcript and analysis, demo scenarios.

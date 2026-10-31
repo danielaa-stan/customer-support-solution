@@ -1,50 +1,50 @@
-# 05. База знань для RAG (контракт C → B)
+# 05. Knowledge base for RAG (C → B contract)
 
-C створює файли, B індексує їх. Зміст чисел береться з [04-business-rules.md](04-business-rules.md).
+C creates the files; B indexes them. Numeric values come from [04-business-rules.md](04-business-rules.md).
 
-## Політики: `data/policies/*.md`
+## Policies: `data/policies/*.md`
 
-Один файл = один документ. Ім'я файлу = `doc_id` + `.md` (напр. `refund-policy.md`).
-Перелік обов'язкових документів і розділів: див. таблицю в 04.
+One file = one document. File name = `doc_id` + `.md` (e.g. `refund-policy.md`).
+For required documents and sections, see the table in 04.
 
-Формат:
+Format:
 
 ```markdown
 ---
 doc_id: refund-policy
-title: Політика повернення коштів
+title: Refund policy
 version: 1.0
 ---
 
-## 2.1 Вікно повернення
-Повернення можливе протягом 14 днів з дати списання ...
+## 2.1 Refund window
+Refunds are available within 14 days of the charge date ...
 
-## 2.2 Подвійне списання
-Якщо ми списали кошти двічі ...
+## 2.2 Duplicate charge
+If we charged you twice ...
 ```
 
-Правила:
+Rules:
 
-1. Заголовок розділу має вигляд `## <номер> <назва>`. Номер = якір для цитування.
-2. Формат цитати (`policy_ref`): `doc_id#номер`, напр. `refund-policy#2.1`.
-3. Один розділ: 2–6 речень, самодостатній (без «див. вище»), бо B розбиває документ на чанки за розділами.
-4. Мова документів: українська.
+1. Section headings use `## <number> <title>`. The number is the citation anchor.
+2. Citation format (`policy_ref`): `doc_id#number`, e.g. `refund-policy#2.1`.
+3. Each section contains 2–6 self-contained sentences (no "see above"), because B splits the document into chunks by section.
+4. All content must be in English, including policies, cases, titles, customer messages, summaries, and examples, as required by [01-ownership.md](01-ownership.md).
 
-B повертає з `search_policy` об'єкти `{doc_id, section, title, text, policy_ref}`.
+B returns objects from `search_policy` in the form `{doc_id, section, title, text, policy_ref}`.
 
-## Схожі кейси: `data/cases.json`
+## Similar cases: `data/cases.json`
 
-Масив із ≥ 150 вирішених кейсів (ціль 200). Формат елемента:
+An array of ≥ 150 resolved cases (target: 200). Item format:
 
 ```json
 {
   "case_id": "case_0042",
-  "title": "Скасування через ціну, утримано знижкою",
+  "title": "Cancellation due to price, retained with a discount",
   "intent": "cancel_subscription",
   "reason": "price_too_high",
   "plan": "individual",
-  "customer_message": "Для мене стало дорого, хочу скасувати.",
-  "summary": "Клієнт слухав 35 год/міс. Запропоновано discount_50_3m, прийнято.",
+  "customer_message": "It has become too expensive for me. I want to cancel.",
+  "summary": "The customer listened for 35 hours/month. Offered discount_50_3m; accepted.",
   "actions": [
     {"tool": "get_available_offers", "args": {}},
     {"tool": "apply_retention_offer", "args": {"offer_code": "discount_50_3m"}}
@@ -55,12 +55,12 @@ B повертає з `search_policy` об'єкти `{doc_id, section, title, te
 }
 ```
 
-- `intent`, `reason`, `resolution`: значення з enum у [06](06-transcript-and-analysis.md).
-- `actions[].tool`: лише реальні назви інструментів із [03](03-mcp-tools.md).
-- Розподіл кейсів має бути реалістичним: приблизно 30% скасування, 25% білінг, 15% refund, 15% техніка, 10% зміна плану, 5% інше.
-- B індексує для пошуку текст `title + customer_message + summary`.
+- `intent`, `reason`, `resolution`: enum values from [06](06-transcript-and-analysis.md).
+- `actions[].tool`: only actual tool names from [03](03-mcp-tools.md).
+- The case distribution must be realistic: approximately 30% cancellations, 25% billing, 15% refunds, 15% technical issues, 10% plan changes, 5% other.
+- B indexes the text `title + customer_message + summary` for search.
 
-## Контракт зі сторони B
+## B's contract
 
-B гарантує: агент у відповіді про рішення посилається щонайменше на один `policy_ref`, коли виконує дію з правилом
-(refund, cancel, пропозиція утримання).
+B guarantees that the agent cites at least one `policy_ref` when explaining a decision involving a policy-governed action
+(refund, cancellation, retention offer).
