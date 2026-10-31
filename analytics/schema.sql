@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS dim_plan (
 INSERT INTO dim_plan (plan_key, plan_code, title) VALUES (0, 'unknown', 'Unknown plan')
 ON CONFLICT (plan_code) DO NOTHING;
 INSERT INTO dim_plan (plan_code, title, seats, monthly_price) VALUES
-  ('individual', 'Individual', 1, 9.99), ('duo', 'Duo', 2, 12.99),
-  ('family', 'Family', 6, 15.99), ('student', 'Student', 1, 4.99)
+  ('individual', 'Individual', 1, 4.99), ('duo', 'Duo', 2, 6.49),
+  ('family', 'Family', 6, 7.99), ('student', 'Student', 1, 2.49)
 ON CONFLICT (plan_code) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS dim_intent (

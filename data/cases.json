@@ -2255,8 +2255,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "individual",
-    "customer_message": "Could you help me? Why was I charged 9.99 USD on October 1?",
-    "summary": "The 9.99 USD payment was one successful renewal for the individual plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "Could you help me? Why was I charged 4.99 USD on October 1?",
+    "summary": "The 4.99 USD payment was one successful renewal for the individual plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2346,8 +2346,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "Could you help me? We have 2 people sharing family. Why is the October 1 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "Could you help me? We have 2 people sharing family. Why is the October 1 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2376,7 +2376,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "individual",
-    "customer_message": "Could you help me? Can you check the refund for my 9.99 USD charge from October 1?",
+    "customer_message": "Could you help me? Can you check the refund for my 4.99 USD charge from October 1?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -2407,8 +2407,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "duo",
-    "customer_message": "I need some help with my account. Why was I charged 12.99 USD on October 2?",
-    "summary": "The 12.99 USD payment was one successful renewal for the duo plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "I need some help with my account. Why was I charged 6.49 USD on October 2?",
+    "summary": "The 6.49 USD payment was one successful renewal for the duo plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2498,8 +2498,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I need some help with my account. We have 3 people sharing family. Why is the October 2 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "I need some help with my account. We have 3 people sharing family. Why is the October 2 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2528,7 +2528,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "duo",
-    "customer_message": "I need some help with my account. Can you check the refund for my 12.99 USD charge from October 2?",
+    "customer_message": "I need some help with my account. Can you check the refund for my 6.49 USD charge from October 2?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -2559,8 +2559,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I would like to understand my options. Why was I charged 15.99 USD on October 3?",
-    "summary": "The 15.99 USD payment was one successful renewal for the family plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "I would like to understand my options. Why was I charged 7.99 USD on October 3?",
+    "summary": "The 7.99 USD payment was one successful renewal for the family plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2650,8 +2650,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I would like to understand my options. We have 4 people sharing family. Why is the October 3 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "I would like to understand my options. We have 4 people sharing family. Why is the October 3 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2680,7 +2680,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I would like to understand my options. Can you check the refund for my 15.99 USD charge from October 3?",
+    "customer_message": "I would like to understand my options. Can you check the refund for my 7.99 USD charge from October 3?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -2711,8 +2711,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "student",
-    "customer_message": "Please check this for me. Why was I charged 4.99 USD on October 4?",
-    "summary": "The 4.99 USD payment was one successful renewal for the student plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "Please check this for me. Why was I charged 2.49 USD on October 4?",
+    "summary": "The 2.49 USD payment was one successful renewal for the student plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2802,8 +2802,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "Please check this for me. We have 5 people sharing family. Why is the October 4 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "Please check this for me. We have 5 people sharing family. Why is the October 4 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2832,7 +2832,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "student",
-    "customer_message": "Please check this for me. Can you check the refund for my 4.99 USD charge from October 4?",
+    "customer_message": "Please check this for me. Can you check the refund for my 2.49 USD charge from October 4?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -2863,8 +2863,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "individual",
-    "customer_message": "I have a question about my subscription. Why was I charged 9.99 USD on October 5?",
-    "summary": "The 9.99 USD payment was one successful renewal for the individual plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "I have a question about my subscription. Why was I charged 4.99 USD on October 5?",
+    "summary": "The 4.99 USD payment was one successful renewal for the individual plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2954,8 +2954,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I have a question about my subscription. We have 6 people sharing family. Why is the October 5 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "I have a question about my subscription. We have 6 people sharing family. Why is the October 5 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -2984,7 +2984,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "individual",
-    "customer_message": "I have a question about my subscription. Can you check the refund for my 9.99 USD charge from October 5?",
+    "customer_message": "I have a question about my subscription. Can you check the refund for my 4.99 USD charge from October 5?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -3015,8 +3015,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "duo",
-    "customer_message": "Could you help me? Why was I charged 12.99 USD on October 6?",
-    "summary": "The 12.99 USD payment was one successful renewal for the duo plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "Could you help me? Why was I charged 6.49 USD on October 6?",
+    "summary": "The 6.49 USD payment was one successful renewal for the duo plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3106,8 +3106,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "Could you help me? We have 2 people sharing family. Why is the October 6 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "Could you help me? We have 2 people sharing family. Why is the October 6 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3136,7 +3136,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "duo",
-    "customer_message": "Could you help me? Can you check the refund for my 12.99 USD charge from October 6?",
+    "customer_message": "Could you help me? Can you check the refund for my 6.49 USD charge from October 6?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -3167,8 +3167,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I need some help with my account. Why was I charged 15.99 USD on October 7?",
-    "summary": "The 15.99 USD payment was one successful renewal for the family plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "I need some help with my account. Why was I charged 7.99 USD on October 7?",
+    "summary": "The 7.99 USD payment was one successful renewal for the family plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3258,8 +3258,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I need some help with my account. We have 3 people sharing family. Why is the October 7 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "I need some help with my account. We have 3 people sharing family. Why is the October 7 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3288,7 +3288,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I need some help with my account. Can you check the refund for my 15.99 USD charge from October 7?",
+    "customer_message": "I need some help with my account. Can you check the refund for my 7.99 USD charge from October 7?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -3319,8 +3319,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "student",
-    "customer_message": "I would like to understand my options. Why was I charged 4.99 USD on October 8?",
-    "summary": "The 4.99 USD payment was one successful renewal for the student plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "I would like to understand my options. Why was I charged 2.49 USD on October 8?",
+    "summary": "The 2.49 USD payment was one successful renewal for the student plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3410,8 +3410,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I would like to understand my options. We have 4 people sharing family. Why is the October 8 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "I would like to understand my options. We have 4 people sharing family. Why is the October 8 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3440,7 +3440,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "student",
-    "customer_message": "I would like to understand my options. Can you check the refund for my 4.99 USD charge from October 8?",
+    "customer_message": "I would like to understand my options. Can you check the refund for my 2.49 USD charge from October 8?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -3471,8 +3471,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "individual",
-    "customer_message": "Please check this for me. Why was I charged 9.99 USD on October 9?",
-    "summary": "The 9.99 USD payment was one successful renewal for the individual plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "Please check this for me. Why was I charged 4.99 USD on October 9?",
+    "summary": "The 4.99 USD payment was one successful renewal for the individual plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3562,8 +3562,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "Please check this for me. We have 5 people sharing family. Why is the October 9 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "Please check this for me. We have 5 people sharing family. Why is the October 9 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3592,7 +3592,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "individual",
-    "customer_message": "Please check this for me. Can you check the refund for my 9.99 USD charge from October 9?",
+    "customer_message": "Please check this for me. Can you check the refund for my 4.99 USD charge from October 9?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -3623,8 +3623,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "duo",
-    "customer_message": "I have a question about my subscription. Why was I charged 12.99 USD on October 10?",
-    "summary": "The 12.99 USD payment was one successful renewal for the duo plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
+    "customer_message": "I have a question about my subscription. Why was I charged 6.49 USD on October 10?",
+    "summary": "The 6.49 USD payment was one successful renewal for the duo plan. The agent explained the monthly price and billing date; the customer accepted the explanation and no refund was issued.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3714,8 +3714,8 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "family",
-    "customer_message": "I have a question about my subscription. We have 6 people sharing family. Why is the October 10 bill 15.99 USD?",
-    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+    "customer_message": "I have a question about my subscription. We have 6 people sharing family. Why is the October 10 bill 7.99 USD?",
+    "summary": "The customer confused the approximate per-person cost with the account total. The agent explained that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
     "actions": [
       {
         "tool": "get_user_profile",
@@ -3744,7 +3744,7 @@
     "intent": "billing_issue",
     "reason": "billing_confusion",
     "plan": "duo",
-    "customer_message": "I have a question about my subscription. Can you check the refund for my 12.99 USD charge from October 10?",
+    "customer_message": "I have a question about my subscription. Can you check the refund for my 6.49 USD charge from October 10?",
     "summary": "The payment record already had status refunded and a refund timestamp. The agent reported the recorded refund without promising a bank arrival date or creating a second refund.",
     "actions": [
       {
@@ -3771,12 +3771,12 @@
   },
   {
     "case_id": "case_0111",
-    "title": "Eligible refund of 9.99 USD after 1 days",
+    "title": "Eligible refund of 4.99 USD after 1 days",
     "intent": "refund_request",
     "reason": "other",
     "plan": "individual",
-    "customer_message": "Could you help me? Please refund the 9.99 USD payment made 1 days ago. Payment reference: pay_case_0111.",
-    "summary": "The succeeded, unrefunded payment was exactly 1 days old and worth 9.99 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "Could you help me? Please refund the 4.99 USD payment made 1 days ago. Payment reference: pay_case_0111.",
+    "summary": "The succeeded, unrefunded payment was exactly 1 days old and worth 4.99 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -3806,12 +3806,12 @@
   },
   {
     "case_id": "case_0112",
-    "title": "Duplicate refund of 9.99 USD after 1 days",
+    "title": "Duplicate refund of 4.99 USD after 1 days",
     "intent": "refund_request",
     "reason": "double_charge",
     "plan": "individual",
-    "customer_message": "Could you help me? I see two 9.99 USD charges 2 minutes apart. Please refund the duplicate. Payment reference: pay_case_0112.",
-    "summary": "Two succeeded 9.99 USD payments belonged to the same customer and were 2 minutes apart; the second payment was 1 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "Could you help me? I see two 4.99 USD charges 2 minutes apart. Please refund the duplicate. Payment reference: pay_case_0112.",
+    "summary": "Two succeeded 4.99 USD payments belonged to the same customer and were 2 minutes apart; the second payment was 1 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -3846,7 +3846,7 @@
     "intent": "refund_request",
     "reason": "other",
     "plan": "individual",
-    "customer_message": "Please refund my 9.99 USD payment from 15 days ago.",
+    "customer_message": "Please refund my 4.99 USD payment from 15 days ago.",
     "summary": "The successful payment was 15 days old, outside the 14-day window. The agent explained that the automatic refund was unavailable and cited the policy; the customer accepted the explanation without a refund or escalation.",
     "actions": [
       {
@@ -3957,12 +3957,12 @@
   },
   {
     "case_id": "case_0116",
-    "title": "Eligible refund of 12.99 USD after 2 days",
+    "title": "Eligible refund of 6.49 USD after 2 days",
     "intent": "refund_request",
     "reason": "other",
     "plan": "duo",
-    "customer_message": "I need some help with my account. Please refund the 12.99 USD payment made 2 days ago. Payment reference: pay_case_0116.",
-    "summary": "The succeeded, unrefunded payment was exactly 2 days old and worth 12.99 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "I need some help with my account. Please refund the 6.49 USD payment made 2 days ago. Payment reference: pay_case_0116.",
+    "summary": "The succeeded, unrefunded payment was exactly 2 days old and worth 6.49 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -3992,12 +3992,12 @@
   },
   {
     "case_id": "case_0117",
-    "title": "Duplicate refund of 12.99 USD after 2 days",
+    "title": "Duplicate refund of 6.49 USD after 2 days",
     "intent": "refund_request",
     "reason": "double_charge",
     "plan": "duo",
-    "customer_message": "I need some help with my account. I see two 12.99 USD charges 3 minutes apart. Please refund the duplicate. Payment reference: pay_case_0117.",
-    "summary": "Two succeeded 12.99 USD payments belonged to the same customer and were 3 minutes apart; the second payment was 2 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "I need some help with my account. I see two 6.49 USD charges 3 minutes apart. Please refund the duplicate. Payment reference: pay_case_0117.",
+    "summary": "Two succeeded 6.49 USD payments belonged to the same customer and were 3 minutes apart; the second payment was 2 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -4032,7 +4032,7 @@
     "intent": "refund_request",
     "reason": "other",
     "plan": "duo",
-    "customer_message": "Please refund my 12.99 USD payment from 18 days ago.",
+    "customer_message": "Please refund my 6.49 USD payment from 18 days ago.",
     "summary": "The successful payment was 18 days old, outside the 14-day window. The agent explained that the automatic refund was unavailable and cited the policy; the customer accepted the explanation without a refund or escalation.",
     "actions": [
       {
@@ -4143,12 +4143,12 @@
   },
   {
     "case_id": "case_0121",
-    "title": "Eligible refund of 15.99 USD after 3 days",
+    "title": "Eligible refund of 7.99 USD after 3 days",
     "intent": "refund_request",
     "reason": "other",
     "plan": "family",
-    "customer_message": "I would like to understand my options. Please refund the 15.99 USD payment made 3 days ago. Payment reference: pay_case_0121.",
-    "summary": "The succeeded, unrefunded payment was exactly 3 days old and worth 15.99 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "I would like to understand my options. Please refund the 7.99 USD payment made 3 days ago. Payment reference: pay_case_0121.",
+    "summary": "The succeeded, unrefunded payment was exactly 3 days old and worth 7.99 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -4178,12 +4178,12 @@
   },
   {
     "case_id": "case_0122",
-    "title": "Duplicate refund of 15.99 USD after 3 days",
+    "title": "Duplicate refund of 7.99 USD after 3 days",
     "intent": "refund_request",
     "reason": "double_charge",
     "plan": "family",
-    "customer_message": "I would like to understand my options. I see two 15.99 USD charges 4 minutes apart. Please refund the duplicate. Payment reference: pay_case_0122.",
-    "summary": "Two succeeded 15.99 USD payments belonged to the same customer and were 4 minutes apart; the second payment was 3 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "I would like to understand my options. I see two 7.99 USD charges 4 minutes apart. Please refund the duplicate. Payment reference: pay_case_0122.",
+    "summary": "Two succeeded 7.99 USD payments belonged to the same customer and were 4 minutes apart; the second payment was 3 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -4218,7 +4218,7 @@
     "intent": "refund_request",
     "reason": "other",
     "plan": "family",
-    "customer_message": "Please refund my 15.99 USD payment from 21 days ago.",
+    "customer_message": "Please refund my 7.99 USD payment from 21 days ago.",
     "summary": "The successful payment was 21 days old, outside the 14-day window. The agent explained that the automatic refund was unavailable and cited the policy; the customer accepted the explanation without a refund or escalation.",
     "actions": [
       {
@@ -4329,12 +4329,12 @@
   },
   {
     "case_id": "case_0126",
-    "title": "Eligible refund of 4.99 USD after 4 days",
+    "title": "Eligible refund of 2.49 USD after 4 days",
     "intent": "refund_request",
     "reason": "other",
     "plan": "student",
-    "customer_message": "Please check this for me. Please refund the 4.99 USD payment made 4 days ago. Payment reference: pay_case_0126.",
-    "summary": "The succeeded, unrefunded payment was exactly 4 days old and worth 4.99 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "Please check this for me. Please refund the 2.49 USD payment made 4 days ago. Payment reference: pay_case_0126.",
+    "summary": "The succeeded, unrefunded payment was exactly 4 days old and worth 2.49 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -4364,12 +4364,12 @@
   },
   {
     "case_id": "case_0127",
-    "title": "Duplicate refund of 4.99 USD after 4 days",
+    "title": "Duplicate refund of 2.49 USD after 4 days",
     "intent": "refund_request",
     "reason": "double_charge",
     "plan": "student",
-    "customer_message": "Please check this for me. I see two 4.99 USD charges 5 minutes apart. Please refund the duplicate. Payment reference: pay_case_0127.",
-    "summary": "Two succeeded 4.99 USD payments belonged to the same customer and were 5 minutes apart; the second payment was 4 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "Please check this for me. I see two 2.49 USD charges 5 minutes apart. Please refund the duplicate. Payment reference: pay_case_0127.",
+    "summary": "Two succeeded 2.49 USD payments belonged to the same customer and were 5 minutes apart; the second payment was 4 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -4404,7 +4404,7 @@
     "intent": "refund_request",
     "reason": "other",
     "plan": "student",
-    "customer_message": "Please refund my 4.99 USD payment from 24 days ago.",
+    "customer_message": "Please refund my 2.49 USD payment from 24 days ago.",
     "summary": "The successful payment was 24 days old, outside the 14-day window. The agent explained that the automatic refund was unavailable and cited the policy; the customer accepted the explanation without a refund or escalation.",
     "actions": [
       {
@@ -4515,12 +4515,12 @@
   },
   {
     "case_id": "case_0131",
-    "title": "Eligible refund of 9.99 USD after 5 days",
+    "title": "Eligible refund of 4.99 USD after 5 days",
     "intent": "refund_request",
     "reason": "other",
     "plan": "individual",
-    "customer_message": "I have a question about my subscription. Please refund the 9.99 USD payment made 5 days ago. Payment reference: pay_case_0131.",
-    "summary": "The succeeded, unrefunded payment was exactly 5 days old and worth 9.99 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "I have a question about my subscription. Please refund the 4.99 USD payment made 5 days ago. Payment reference: pay_case_0131.",
+    "summary": "The succeeded, unrefunded payment was exactly 5 days old and worth 4.99 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -4550,12 +4550,12 @@
   },
   {
     "case_id": "case_0132",
-    "title": "Duplicate refund of 9.99 USD after 5 days",
+    "title": "Duplicate refund of 4.99 USD after 5 days",
     "intent": "refund_request",
     "reason": "double_charge",
     "plan": "individual",
-    "customer_message": "I have a question about my subscription. I see two 9.99 USD charges 6 minutes apart. Please refund the duplicate. Payment reference: pay_case_0132.",
-    "summary": "Two succeeded 9.99 USD payments belonged to the same customer and were 6 minutes apart; the second payment was 5 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "I have a question about my subscription. I see two 4.99 USD charges 6 minutes apart. Please refund the duplicate. Payment reference: pay_case_0132.",
+    "summary": "Two succeeded 4.99 USD payments belonged to the same customer and were 6 minutes apart; the second payment was 5 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -4590,7 +4590,7 @@
     "intent": "refund_request",
     "reason": "other",
     "plan": "individual",
-    "customer_message": "Please refund my 9.99 USD payment from 27 days ago.",
+    "customer_message": "Please refund my 4.99 USD payment from 27 days ago.",
     "summary": "The successful payment was 27 days old, outside the 14-day window. The agent explained that the automatic refund was unavailable and cited the policy; the customer accepted the explanation without a refund or escalation.",
     "actions": [
       {
@@ -4701,12 +4701,12 @@
   },
   {
     "case_id": "case_0136",
-    "title": "Eligible refund of 12.99 USD after 6 days",
+    "title": "Eligible refund of 6.49 USD after 6 days",
     "intent": "refund_request",
     "reason": "other",
     "plan": "duo",
-    "customer_message": "Could you help me? Please refund the 12.99 USD payment made 6 days ago. Payment reference: pay_case_0136.",
-    "summary": "The succeeded, unrefunded payment was exactly 6 days old and worth 12.99 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "Could you help me? Please refund the 6.49 USD payment made 6 days ago. Payment reference: pay_case_0136.",
+    "summary": "The succeeded, unrefunded payment was exactly 6 days old and worth 6.49 USD. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -4736,12 +4736,12 @@
   },
   {
     "case_id": "case_0137",
-    "title": "Duplicate refund of 12.99 USD after 6 days",
+    "title": "Duplicate refund of 6.49 USD after 6 days",
     "intent": "refund_request",
     "reason": "double_charge",
     "plan": "duo",
-    "customer_message": "Could you help me? I see two 12.99 USD charges 7 minutes apart. Please refund the duplicate. Payment reference: pay_case_0137.",
-    "summary": "Two succeeded 12.99 USD payments belonged to the same customer and were 7 minutes apart; the second payment was 6 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
+    "customer_message": "Could you help me? I see two 6.49 USD charges 7 minutes apart. Please refund the duplicate. Payment reference: pay_case_0137.",
+    "summary": "Two succeeded 6.49 USD payments belonged to the same customer and were 7 minutes apart; the second payment was 6 days old. The amount was at or below 20.00 USD and inside the inclusive 14-day window. issue_refund succeeded; the agent cited the applicable policy and reported the refund.",
     "actions": [
       {
         "tool": "get_payments",
@@ -4776,7 +4776,7 @@
     "intent": "refund_request",
     "reason": "other",
     "plan": "duo",
-    "customer_message": "Please refund my 12.99 USD payment from 30 days ago.",
+    "customer_message": "Please refund my 6.49 USD payment from 30 days ago.",
     "summary": "The successful payment was 30 days old, outside the 14-day window. The agent explained that the automatic refund was unavailable and cited the policy; the customer accepted the explanation without a refund or escalation.",
     "actions": [
       {

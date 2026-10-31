@@ -41,6 +41,13 @@ class ReferenceDimensionTests(unittest.TestCase):
                 price, seats = re.search(rf"\| `{plan}` \| ([\d.]+) \| (\d+) \|", contract).groups()
                 self.assertRegex(SCHEMA, rf"\('{plan}', '[^']+', {seats}, {re.escape(price)}\)")
 
+    def test_price_migration_matches_contract(self):
+        contract = (ROOT / "contracts/04-business-rules.md").read_text(encoding="utf-8")
+        migration = (ROOT / "analytics/migrations/001_ukraine_plan_prices.sql").read_text(encoding="utf-8")
+        for plan in ("individual", "duo", "family", "student"):
+            price = re.search(rf"\| `{plan}` \| ([\d.]+) \|", contract)[1]
+            self.assertRegex(migration, rf"\('{plan}', {re.escape(price)}::NUMERIC\(10,2\)\)")
+
 
 if __name__ == "__main__":
     unittest.main()

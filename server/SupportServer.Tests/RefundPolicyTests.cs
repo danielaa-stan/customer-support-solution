@@ -8,7 +8,7 @@ public class RefundPolicyTests
 {
     private static readonly DateTimeOffset Now = BusinessRules.DefaultDemoNow; // 2026-10-31T12:00:00Z
 
-    private static Payment Pay(double amount = 9.99, string status = "succeeded", string chargedAt = "2026-10-25T12:00:00Z") =>
+    private static Payment Pay(double amount = 4.99, string status = "succeeded", string chargedAt = "2026-10-25T12:00:00Z") =>
         new() { Id = "pay_x", UserId = "u", Amount = amount, Currency = "USD", Kind = "renewal", Status = status, ChargedAt = chargedAt };
 
     [Fact]

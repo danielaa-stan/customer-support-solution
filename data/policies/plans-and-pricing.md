@@ -5,9 +5,9 @@ version: 1.0
 ---
 
 ## 1.1 Monthly prices and seats
-The individual plan costs 9.99 USD per month for one seat, and duo costs 12.99 USD per month for two seats.
-The family plan costs 15.99 USD per month for six seats, and student costs 4.99 USD per month for one seat.
-At full occupancy, family costs approximately 2.67 USD per person per month; the account is still charged the full 15.99 USD.
+The individual plan costs 4.99 USD per month for one seat, and duo costs 6.49 USD per month for two seats.
+The family plan costs 7.99 USD per month for six seats, and student costs 2.49 USD per month for one seat.
+At full occupancy, family costs approximately 1.33 USD per person per month; the account is still charged the full 7.99 USD.
 Explain the total price and seat count before recommending a shared plan rather than promising savings without enough participants.
 
 ## 1.2 Student eligibility

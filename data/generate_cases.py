@@ -12,7 +12,7 @@ OPENINGS = (
     "Please check this for me.",
     "I have a question about my subscription.",
 )
-PLANS = (("individual", "9.99"), ("duo", "12.99"), ("family", "15.99"), ("student", "4.99"))
+PLANS = (("individual", "4.99"), ("duo", "6.49"), ("family", "7.99"), ("student", "2.49"))
 
 
 def action(tool, **args):
@@ -111,9 +111,9 @@ def build_cases():
              "The profile showed a pending downgrade with a future next_billing_date. The agent explained "
              "that the current plan remains until the next billing date and did not apply a second plan change.",
              ["plans-and-pricing#1.3"], ["pending_plan", "downgrade"]),
-            ("Shared-plan total explained", f"We have {2 + variant % 5} people sharing family. Why is the October {day} bill 15.99 USD?",
+            ("Shared-plan total explained", f"We have {2 + variant % 5} people sharing family. Why is the October {day} bill 7.99 USD?",
              "The customer confused the approximate per-person cost with the account total. The agent explained "
-             "that family costs 15.99 USD for up to six seats and approximately 2.67 USD each only with six participants.",
+             "that family costs 7.99 USD for up to six seats and approximately 1.33 USD each only with six participants.",
              ["plans-and-pricing#1.1"], ["shared_plan", "total_price"]),
             ("Previously refunded charge explained", f"Can you check the refund for my {price} USD charge from October {day}?",
              "The payment record already had status refunded and a refund timestamp. The agent reported "
