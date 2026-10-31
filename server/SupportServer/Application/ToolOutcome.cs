@@ -37,6 +37,13 @@ public sealed class ToolOutcome
 
     public bool Ok => Status is ResultStatus.Done or ResultStatus.PendingConfirmation;
 
+    /// <summary>Returns a copy that is recorded in audit_log with the given autonomy level.</summary>
+    public ToolOutcome AtLevel(AutonomyLevel level) => new()
+    {
+        Status = Status, Data = Data, Error = Error, NeedsHuman = NeedsHuman,
+        ReasonCode = ReasonCode, PolicyRef = PolicyRef, LevelOverride = level,
+    };
+
     public static ToolOutcome Done(object? data, string? reasonCode = null, string? policyRef = null) =>
         new() { Status = ResultStatus.Done, Data = data, ReasonCode = reasonCode, PolicyRef = policyRef };
 

@@ -21,11 +21,16 @@ public static class ServiceCollectionExtensions
         // Ports and adapters: swapping an implementation does not touch the rest of the code.
         services.AddSingleton<IBillingProvider, MockBillingProvider>();
         services.AddSingleton<IAuditLog, SqliteAuditLog>();
+        services.AddSingleton<ISupportStore, SqliteSupportStore>();
 
         services.AddSingleton(new SessionState(options.AllowSessionSwitch));
         services.AddSingleton<ToolRunner>();
         services.AddSingleton<AccountService>();
         services.AddSingleton<PaymentService>();
+        services.AddSingleton<OfferService>();
+        services.AddSingleton<SubscriptionService>();
+        services.AddSingleton<PendingActionService>();
+        services.AddSingleton<EscalationService>();
         return services;
     }
 }

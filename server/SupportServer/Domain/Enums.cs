@@ -30,3 +30,17 @@ public static class ReasonCodes
 
     public static string Allowed => string.Join(", ", All.Order());
 }
+
+/// <summary>Intent enum, used as the ticket category (contracts/06-transcript-and-analysis.md).</summary>
+public static class Intents
+{
+    private static readonly HashSet<string> All =
+    [
+        "cancel_subscription", "billing_issue", "refund_request", "plan_change",
+        "technical_issue", "account_access", "other",
+    ];
+
+    public static bool IsValid(string? value) => value is not null && All.Contains(value);
+
+    public static string Allowed => string.Join(", ", All.Order());
+}

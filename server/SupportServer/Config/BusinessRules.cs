@@ -21,4 +21,12 @@ public static class PolicyRefs
     public const string RefundWindow = "refund-policy#2.1";
     public const string DuplicateCharge = "refund-policy#2.2";
     public const string RefundAutoLimit = "refund-policy#2.3";
+    public const string OfferEligibility = "retention-rules#1.1";
+    public const string OfferCooldown = "retention-rules#1.2";
+    public const string CancelRight = "cancellation#1.1";
+    public const string CancelEndOfPeriod = "cancellation#1.2";
+    public const string StudentPlan = "plans-and-pricing#1.2";
+    public const string PlanChange = "plans-and-pricing#1.3";
+    public const string Pause = "pause-policy#1.1";
+    public const string Escalation = "escalation-matrix#1.1";
 }

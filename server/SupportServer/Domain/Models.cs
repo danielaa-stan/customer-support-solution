@@ -52,3 +52,30 @@ public sealed class UsageStats
 }
 
 public sealed record UserAccount(User User, Subscription Subscription, UsageStats Usage);
+
+public sealed class PendingAction
+{
+    public string Id { get; set; } = "";
+    public string SessionId { get; set; } = "";
+    public string UserId { get; set; } = "";
+    public string Tool { get; set; } = "";
+    public string ArgsJson { get; set; } = "";
+    public string Summary { get; set; } = "";
+    public long ProposedAtTurn { get; set; }
+    public string Status { get; set; } = "pending";
+    public string CreatedAt { get; set; } = "";
+    public string? ResolvedAt { get; set; }
+}
+
+public sealed class Ticket
+{
+    public string Id { get; set; } = "";
+    public string UserId { get; set; } = "";
+    public string SessionId { get; set; } = "";
+    public string Priority { get; set; } = "";
+    public string Category { get; set; } = "";
+    public string Summary { get; set; } = "";
+    public string? SuggestedActionJson { get; set; }
+    public string Status { get; set; } = "open";
+    public string CreatedAt { get; set; } = "";
+}
