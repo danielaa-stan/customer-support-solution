@@ -25,6 +25,14 @@
       "created_at": "2025-09-01T09:00:00Z"
     },
     {
+      "id": "u_demo_escalate",
+      "name": "Ihor Bondar",
+      "email": "igor@example.com",
+      "country": "UA",
+      "is_student": 0,
+      "created_at": "2026-03-15T10:00:00Z"
+    },
+    {
       "id": "u_background_001",
       "name": "Alex Parker",
       "email": "customer001@example.com",
@@ -386,6 +394,21 @@
       "price_currency": "USD",
       "started_at": "2025-09-01T09:00:00Z",
       "next_billing_date": "2026-11-01T09:00:00Z",
+      "paused_until": null,
+      "cancel_at": null,
+      "discount_percent": 0,
+      "discount_payments_left": 0
+    },
+    {
+      "id": "sub_demo_escalate",
+      "user_id": "u_demo_escalate",
+      "plan": "individual",
+      "pending_plan": null,
+      "status": "active",
+      "price_amount": 4.99,
+      "price_currency": "USD",
+      "started_at": "2026-03-15T10:00:00Z",
+      "next_billing_date": "2026-11-15T10:00:00Z",
       "paused_until": null,
       "cancel_at": null,
       "discount_percent": 0,
@@ -1089,6 +1112,17 @@
       "kind": "renewal",
       "status": "succeeded",
       "charged_at": "2026-10-01T09:00:00Z",
+      "refunded_at": null,
+      "refund_reason": null
+    },
+    {
+      "id": "pay_demo_big",
+      "user_id": "u_demo_escalate",
+      "amount": 23.97,
+      "currency": "USD",
+      "kind": "other",
+      "status": "succeeded",
+      "charged_at": "2026-10-27T10:00:00Z",
       "refunded_at": null,
       "refund_reason": null
     },
@@ -2412,6 +2446,13 @@
       "last_active_at": "2026-09-20T18:00:00Z",
       "devices_count": 1,
       "offline_downloads": 0
+    },
+    {
+      "user_id": "u_demo_escalate",
+      "listening_hours_30d": 8.0,
+      "last_active_at": "2026-10-29T12:00:00Z",
+      "devices_count": 1,
+      "offline_downloads": 5
     },
     {
       "user_id": "u_background_001",

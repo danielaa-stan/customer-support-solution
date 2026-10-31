@@ -24,9 +24,9 @@ def months_after(value, months):
                          day=min(value.day, calendar.monthrange(year, month + 1)[1]))
 
 
-def payment(payment_id, user_id, amount, charged_at, status="succeeded"):
+def payment(payment_id, user_id, amount, charged_at, status="succeeded", kind="renewal"):
     return {"id": payment_id, "user_id": user_id, "amount": amount, "currency": "USD",
-            "kind": "renewal", "status": status, "charged_at": iso(charged_at),
+            "kind": kind, "status": status, "charged_at": iso(charged_at),
             "refunded_at": None, "refund_reason": None}
 
 
@@ -81,6 +81,12 @@ def build_seed():
     for month in (8, 9, 10):
         seed["payments"].append(payment(f"pay_demo_cancel_{month:02d}", "u_demo_cancel", PRICES["individual"],
                                         datetime(2026, month, 1, 9, tzinfo=timezone.utc)))
+
+    add_customer("u_demo_escalate", "Ihor Bondar", "igor@example.com", "UA", "individual",
+                 datetime(2026, 3, 15, 10, tzinfo=timezone.utc), datetime(2026, 11, 15, 10, tzinfo=timezone.utc),
+                 8.0, datetime(2026, 10, 29, 12, tzinfo=timezone.utc), 1, 5)
+    seed["payments"].append(payment("pay_demo_big", "u_demo_escalate", 23.97,
+                                    datetime(2026, 10, 27, 10, tzinfo=timezone.utc), kind="other"))
 
     first_names = ("Alex", "Jordan", "Taylor", "Morgan", "Casey", "Robin", "Jamie", "Sam")
     last_names = ("Parker", "Evans", "Chen", "Patel", "Rivera")

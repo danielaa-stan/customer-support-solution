@@ -30,7 +30,7 @@ class SeedDataTests(unittest.TestCase):
     def test_generated_file_and_reproducibility(self):
         self.assertEqual(generator.build_seed(), self.seed)
         self.assertEqual(generator.build_seed(), generator.build_seed())
-        self.assertEqual(len(self.users), 43)
+        self.assertEqual(len(self.users), 44)
         self.assertEqual(len([key for key in self.users if key.startswith("u_background_")]), 40)
 
     def test_schema_fields_and_empty_runtime_tables(self):
@@ -105,7 +105,7 @@ class SeedDataTests(unittest.TestCase):
         self.assertEqual(self.usage["u_demo_family"]["devices_count"], 2)
         self.assertEqual(self.usage["u_demo_cancel"]["listening_hours_30d"], 1.2)
         self.assertEqual(self.usage["u_demo_cancel"]["last_active_at"], "2026-09-20T18:00:00Z")
-        for key in ("u_demo_family", "u_demo_double", "u_demo_cancel"):
+        for key in ("u_demo_family", "u_demo_double", "u_demo_cancel", "u_demo_escalate"):
             subscription = self.subscriptions[key]
             self.assertEqual(subscription["plan"], "individual")
             self.assertEqual(subscription["status"], "active")
@@ -122,6 +122,31 @@ class SeedDataTests(unittest.TestCase):
         self.assertEqual(first["charged_at"], "2026-10-29T08:00:00Z")
         self.assertEqual(second["charged_at"], "2026-10-29T08:02:00Z")
         self.assertLessEqual(generator.DEMO_NOW - date(second["charged_at"]), timedelta(days=14))
+
+    def test_bonus_escalation_starting_state_matches_contract(self):
+        user_id = "u_demo_escalate"
+        self.assertIn(user_id, self.users)
+        subscription = self.subscriptions[user_id]
+        self.assertEqual(subscription["id"], "sub_demo_escalate")
+        self.assertEqual(subscription["started_at"], "2026-03-15T10:00:00Z")
+        self.assertEqual(subscription["next_billing_date"], "2026-11-15T10:00:00Z")
+        self.assertEqual(self.usage[user_id]["listening_hours_30d"], 8.0)
+        payments = [row for row in self.seed["payments"] if row["id"] == "pay_demo_big"]
+        self.assertEqual(len(payments), 1)
+        payment = payments[0]
+        self.assertEqual(payment["user_id"], user_id)
+        self.assertEqual(payment["amount"], 23.97)
+        self.assertEqual(payment["currency"], "USD")
+        self.assertEqual(payment["kind"], "other")
+        self.assertEqual(payment["status"], "succeeded")
+        self.assertEqual(payment["charged_at"], "2026-10-27T10:00:00Z")
+        self.assertIsNone(payment["refunded_at"])
+        self.assertIsNone(payment["refund_reason"])
+        contract = (DATA.parent / "contracts/04-business-rules.md").read_text(encoding="utf-8")
+        limit = float(re.search(r"\| `AUTO_REFUND_LIMIT` \| ([\d.]+)", contract)[1])
+        window = int(re.search(r"\| `REFUND_WINDOW_DAYS` \| (\d+)", contract)[1])
+        self.assertGreater(payment["amount"], limit)
+        self.assertLessEqual(generator.DEMO_NOW - date(payment["charged_at"]), timedelta(days=window))
 
     def test_usage_and_retention_history(self):
         for user in self.users.values():

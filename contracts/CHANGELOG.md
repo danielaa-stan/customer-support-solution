@@ -1,6 +1,8 @@
 # Contract changelog
 
 ## Unreleased
+- Include the bonus escalation account and its 23.97 USD payment in generated customer seeds;
+  verify the human-escalation flow using the generated seed rather than the fallback seed.
 - Align the backend plan catalog and fallback seed with the Ukraine pricing contract;
   accept empty runtime-table arrays in generated seeds and reject supplied runtime history.
 - Align the regular monthly catalog with the supplied Ukraine pricing: Individual 4.99 USD,

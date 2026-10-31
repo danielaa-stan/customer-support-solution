@@ -14,9 +14,9 @@ public sealed class TestHarness : IDisposable
 
     public ServiceProvider Services { get; }
 
-    public TestHarness()
+    public TestHarness(string? seedPath = null)
     {
-        var seed = Path.Combine(AppContext.BaseDirectory, "dev-seed.json");
+        var seed = seedPath ?? Path.Combine(AppContext.BaseDirectory, "dev-seed.json");
         var options = new SupportOptions(_dbPath, seed, BusinessRules.DefaultDemoNow);
         DbInitializer.EnsureCreated(options);
 

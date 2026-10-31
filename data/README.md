@@ -11,7 +11,7 @@ Historical cases are synthetic examples produced from explicit scenario template
 - `generate_cases.py`: deterministic, dependency-free Python generator for the case file.
 - `tests/test_rag_data.py`: contract, reference, action-sequence, and reproducibility checks.
 - `generate_seed.py`: deterministic starting-state generator for customer data.
-- `seed/seed.json`: three fixed demo customers plus 40 synthetic background customers.
+- `seed/seed.json`: four fixed demo customers (three main scenarios and bonus escalation) plus 40 synthetic background customers.
 - `tests/test_seed_data.py`: customer relationships, starting states, and reproducibility checks.
 - `validate_seed.py`: emits a rollback-only PostgreSQL schema validation transaction.
 - `load_seed.py`: inserts starting data into an empty local PostgreSQL support database.
@@ -98,7 +98,9 @@ All dates use the fixed `DEMO_NOW = 2026-10-31T12:00:00Z`; changing your machine
 does not change this dataset. Demo identifiers, duplicate payment timestamps, and required usage values
 are preserved exactly. Background records cover all four plans and subscription statuses, historical
 payments and refunds, pending downgrades, and retention-offer history. Runtime audit records, tickets,
-and pending actions start empty. The optional large-refund bonus customer is not included yet.
+and pending actions start empty. The bonus account `u_demo_escalate` includes the unrefunded
+`pay_demo_big` payment: 23.97 USD, kind `other`, charged at `2026-10-27T10:00:00Z`.
+The generated seed contains 44 customers and 128 payments and supports all four contracted demo flows.
 
 The regular monthly catalog uses the supplied Ukraine prices: individual 4.99 USD, duo 6.49 USD,
 family 7.99 USD, and student 2.49 USD. Introductory free-month promotions are not modeled.
