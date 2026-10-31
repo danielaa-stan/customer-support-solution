@@ -10,6 +10,6 @@
    "messages": ["Just cancel my subscription.", "No, cancel it.", "Yes."],
    "expect_tools": ["get_user_profile", "cancel_subscription", "confirm_action"]},
   {"name": "Bonus. Large refund -> escalation", "user_id": "u_demo_escalate",
-   "messages": ["I was charged 47.97 USD by mistake for three months in advance. Please refund it."],
+   "messages": ["I was charged 23.97 USD by mistake for three months in advance. Please refund it."],
    "expect_tools": ["get_payments", "issue_refund", "escalate_to_human"]}
 ]

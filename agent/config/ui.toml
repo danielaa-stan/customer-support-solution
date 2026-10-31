@@ -47,4 +47,4 @@ sample = "Just cancel my subscription."
 [[customers]]
 id = "u_demo_escalate"
 label = "Ihor — large refund"
-sample = "I was charged 47.97 USD by mistake for three months in advance. Please refund it."
+sample = "I was charged 23.97 USD by mistake for three months in advance. Please refund it."
