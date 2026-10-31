@@ -1,0 +1,36 @@
+{
+  "users": [
+    {"id": "u_demo_family",   "name": "Olena Koval",   "email": "olena@example.com",  "country": "UA", "is_student": 0, "created_at": "2026-02-10T09:00:00Z"},
+    {"id": "u_demo_double",   "name": "Andriy Melnyk", "email": "andriy@example.com", "country": "UA", "is_student": 0, "created_at": "2026-05-01T08:00:00Z"},
+    {"id": "u_demo_cancel",   "name": "Maria Shevchuk",   "email": "maria@example.com",  "country": "UA", "is_student": 0, "created_at": "2025-08-25T10:00:00Z"},
+    {"id": "u_demo_escalate", "name": "Ihor Bondar",    "email": "igor@example.com",   "country": "UA", "is_student": 0, "created_at": "2026-03-15T10:00:00Z"}
+  ],
+  "subscriptions": [
+    {"id": "sub_demo_family",   "user_id": "u_demo_family",   "plan": "individual", "status": "active", "price_amount": 9.99, "price_currency": "USD", "started_at": "2026-02-10T09:00:00Z", "next_billing_date": "2026-11-10T09:00:00Z"},
+    {"id": "sub_demo_double",   "user_id": "u_demo_double",   "plan": "individual", "status": "active", "price_amount": 9.99, "price_currency": "USD", "started_at": "2026-05-01T08:00:00Z", "next_billing_date": "2026-11-29T08:00:00Z"},
+    {"id": "sub_demo_cancel",   "user_id": "u_demo_cancel",   "plan": "individual", "status": "active", "price_amount": 9.99, "price_currency": "USD", "started_at": "2025-08-25T10:00:00Z", "next_billing_date": "2026-11-25T10:00:00Z"},
+    {"id": "sub_demo_escalate", "user_id": "u_demo_escalate", "plan": "individual", "status": "active", "price_amount": 9.99, "price_currency": "USD", "started_at": "2026-03-15T10:00:00Z", "next_billing_date": "2026-11-15T10:00:00Z"}
+  ],
+  "payments": [
+    {"id": "pay_f_1", "user_id": "u_demo_family", "amount": 9.99, "currency": "USD", "kind": "renewal", "status": "succeeded", "charged_at": "2026-10-10T09:00:00Z"},
+    {"id": "pay_f_2", "user_id": "u_demo_family", "amount": 9.99, "currency": "USD", "kind": "renewal", "status": "succeeded", "charged_at": "2026-09-10T09:00:00Z"},
+    {"id": "pay_f_3", "user_id": "u_demo_family", "amount": 9.99, "currency": "USD", "kind": "renewal", "status": "succeeded", "charged_at": "2026-08-10T09:00:00Z"},
+
+    {"id": "pay_demo_dbl_0", "user_id": "u_demo_double", "amount": 9.99, "currency": "USD", "kind": "renewal", "status": "succeeded", "charged_at": "2026-09-29T08:00:00Z"},
+    {"id": "pay_demo_dbl_1", "user_id": "u_demo_double", "amount": 9.99, "currency": "USD", "kind": "renewal", "status": "succeeded", "charged_at": "2026-10-29T08:00:00Z"},
+    {"id": "pay_demo_dbl_2", "user_id": "u_demo_double", "amount": 9.99, "currency": "USD", "kind": "renewal", "status": "succeeded", "charged_at": "2026-10-29T08:02:00Z"},
+
+    {"id": "pay_c_1", "user_id": "u_demo_cancel", "amount": 9.99, "currency": "USD", "kind": "renewal", "status": "succeeded", "charged_at": "2026-10-25T10:00:00Z"},
+    {"id": "pay_c_2", "user_id": "u_demo_cancel", "amount": 9.99, "currency": "USD", "kind": "renewal", "status": "succeeded", "charged_at": "2026-09-25T10:00:00Z"},
+
+    {"id": "pay_e_1",        "user_id": "u_demo_escalate", "amount": 9.99,  "currency": "USD", "kind": "renewal", "status": "succeeded", "charged_at": "2026-10-15T10:00:00Z"},
+    {"id": "pay_demo_big",   "user_id": "u_demo_escalate", "amount": 47.97, "currency": "USD", "kind": "other",   "status": "succeeded", "charged_at": "2026-10-27T10:00:00Z"}
+  ],
+  "usage_stats": [
+    {"user_id": "u_demo_family",   "listening_hours_30d": 41.5, "last_active_at": "2026-10-30T20:10:00Z", "devices_count": 2, "offline_downloads": 120},
+    {"user_id": "u_demo_double",   "listening_hours_30d": 12.0, "last_active_at": "2026-10-30T18:00:00Z", "devices_count": 1, "offline_downloads": 10},
+    {"user_id": "u_demo_cancel",   "listening_hours_30d": 1.2,  "last_active_at": "2026-09-20T18:00:00Z", "devices_count": 1, "offline_downloads": 0},
+    {"user_id": "u_demo_escalate", "listening_hours_30d": 8.0,  "last_active_at": "2026-10-29T12:00:00Z", "devices_count": 1, "offline_downloads": 5}
+  ],
+  "retention_offers_used": []
+}
