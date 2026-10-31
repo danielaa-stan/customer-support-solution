@@ -1,0 +1,25 @@
+# Agent settings (non-secret). Secrets such as GEMINI_API_KEY live only in .env.
+# Any value can be overridden by an environment variable named SECTION_KEY,
+# e.g. LLM_REASONING_EFFORT=low or LOGGING_CONSOLE_LEVEL=DEBUG.
+
+[llm]
+base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"
+model = "gemma-4-26b-a4b-it"
+reasoning_effort = ""          # "" = model default (thinking on). Gemma 4 on the Gemini API rejects this
+                               # parameter (HTTP 400); the client then falls back to the default.
+temperature = 0.2
+timeout_s = 90.0
+max_retries = 2
+retry_backoff_s = 1.0          # wait before retry n = retry_backoff_s * 2^n
+thought_open_tag = "<thought>"
+thought_close_tag = "</thought>"
+
+[logging]
+console_level = "INFO"
+file_level = "DEBUG"           # the file log contains full prompts and answers
+dir = "runtime/logs"           # relative to the repo root
+file_name = "agent.log"
+quiet_libraries = ["httpx", "httpx2", "httpcore", "openai"]
+
+[prompts]
+dir = "prompts"                # relative to this file
