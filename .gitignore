@@ -7,7 +7,6 @@ runtime/
 # Python
 __pycache__/
 *.pyc
-*.py[cod]
 .venv/
 venv/
 .pytest_cache/
