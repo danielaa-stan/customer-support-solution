@@ -93,12 +93,20 @@ For local experiments with several users in one process use `ALLOW_SESSION_SWITC
 
 ## Tool status
 
-| Tool | State |
-|------|-------|
-| `sys_set_context`, `get_user_profile`, `get_payments`, `issue_refund` | done + tests |
-| `get_available_offers`, `apply_retention_offer`, `pause_subscription`, `change_plan` | next |
-| `cancel_subscription`, `confirm_action`, `reject_action` (two-step flow) | next |
-| `escalate_to_human` | next |
+| Tool | Autonomy | State |
+|------|----------|-------|
+| `sys_set_context` | internal | done |
+| `get_user_profile`, `get_payments`, `get_available_offers` | read | done |
+| `issue_refund`, `pause_subscription`, `change_plan`, `apply_retention_offer`, `escalate_to_human`, `reject_action` | auto | done |
+| `cancel_subscription` + `confirm_action` | confirm | done (two-step flow) |
+
+All 12 tools from `contracts/03-mcp-tools.md` are implemented, with tests for demo scenarios 1, 2, 3 and the bonus escalation.
+
+### Two-step confirmation
+
+`cancel_subscription` only records a `pending_actions` row and returns `pending_confirmation`. `confirm_action` executes it, but only when
+`user_turn` is greater than the turn of the proposal, i.e. after a NEW customer message. Pending actions are bound to the session and user,
+repeating the same proposal returns the same pending action, and a rejected or confirmed action cannot be confirmed again.
 
 ## How to add a tool
 

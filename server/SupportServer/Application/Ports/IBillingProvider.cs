@@ -20,4 +20,20 @@ public interface IBillingProvider
     bool RefundPayment(string paymentId, string reasonCode, DateTimeOffset now);
 
     bool HasRetentionOfferSince(string userId, DateTimeOffset since);
+
+    // Subscription changes. Each returns true if a row was changed; false if the state no longer allowed it.
+
+    bool PauseSubscription(string userId, DateTimeOffset until);
+
+    bool ChangePlanNow(string userId, string plan, double price);
+
+    bool SetPendingPlan(string userId, string plan);
+
+    bool ApplyDiscountOffer(string userId, string offerCode, int percent, int payments, DateTimeOffset now);
+
+    bool GrantFreeMonth(string userId, string offerCode, DateTimeOffset newNextBillingDate, DateTimeOffset now);
+
+    bool ScheduleCancellation(string userId, DateTimeOffset cancelAt);
+
+    bool CancelNow(string userId, DateTimeOffset now);
 }

@@ -26,7 +26,7 @@ public sealed class ToolFlowTests : IDisposable
         Assert.True(result.GetProperty("ok").GetBoolean());
     }
 
-    private record AuditRow(string tool, string result_status, string autonomy_level, string? error_code, string? policy_ref, string? user_id);
+    public record AuditRow(string tool, string result_status, string autonomy_level, string? error_code, string? policy_ref, string? user_id);
 
     [Fact]
     public void Tool_without_context_returns_NO_CONTEXT()
