@@ -107,9 +107,11 @@ with panel_col:
                 st.warning(f"🛡️ {T['safety']}: {', '.join(turn.safety_flags)}")
             if turn.needs_human:
                 st.error(f"🧑‍💼 {T['needs_human']}")
-            refs = cited_policies(turn)
-            if refs:
-                st.markdown(f"**{T['policies']}:** " + " ".join(f"`{r}`" for r in refs))
+            applied, retrieved = cited_policies(turn)
+            if applied:
+                st.markdown(f"**{T['policies_applied']}:** " + " ".join(f"`{r}`" for r in applied))
+            if retrieved:
+                st.caption(f"{T['policies_retrieved']}: " + " ".join(f"`{r}`" for r in retrieved))
             if turn.tool_events:
                 st.markdown(f"**{T['actions']}**")
                 for e in turn.tool_events:
