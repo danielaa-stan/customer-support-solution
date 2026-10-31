@@ -53,4 +53,83 @@ public sealed class MockBillingProvider(SqliteConnectionFactory db) : IBillingPr
             "SELECT COUNT(1) FROM retention_offers_used WHERE user_id = @userId AND applied_at >= @since",
             new { userId, since = Iso.Format(since) }) > 0;
     }
+
+    public bool PauseSubscription(string userId, DateTimeOffset until)
+    {
+        using var c = db.Open();
+        return c.Execute(
+            "UPDATE subscriptions SET status = 'paused', paused_until = @until, next_billing_date = @until " +
+            "WHERE user_id = @userId AND status = 'active' AND cancel_at IS NULL",
+            new { until = Iso.Format(until), userId }) == 1;
+    }
+
+    public bool ChangePlanNow(string userId, string plan, double price)
+    {
+        using var c = db.Open();
+        return c.Execute(
+            "UPDATE subscriptions SET plan = @plan, pending_plan = NULL, price_amount = @price " +
+            "WHERE user_id = @userId AND status = 'active'",
+            new { plan, price, userId }) == 1;
+    }
+
+    public bool SetPendingPlan(string userId, string plan)
+    {
+        using var c = db.Open();
+        return c.Execute(
+            "UPDATE subscriptions SET pending_plan = @plan WHERE user_id = @userId AND status = 'active'",
+            new { plan, userId }) == 1;
+    }
+
+    public bool ApplyDiscountOffer(string userId, string offerCode, int percent, int payments, DateTimeOffset now)
+    {
+        using var c = db.Open();
+        using var tx = c.BeginTransaction();
+        var changed = c.Execute(
+            "UPDATE subscriptions SET discount_percent = @percent, discount_payments_left = @payments " +
+            "WHERE user_id = @userId AND status = 'active'",
+            new { percent, payments, userId }, tx);
+        if (changed != 1) return false;
+
+        RecordOfferUsed(c, tx, userId, offerCode, now);
+        tx.Commit();
+        return true;
+    }
+
+    public bool GrantFreeMonth(string userId, string offerCode, DateTimeOffset newNextBillingDate, DateTimeOffset now)
+    {
+        using var c = db.Open();
+        using var tx = c.BeginTransaction();
+        var changed = c.Execute(
+            "UPDATE subscriptions SET next_billing_date = @next WHERE user_id = @userId AND status = 'active'",
+            new { next = Iso.Format(newNextBillingDate), userId }, tx);
+        if (changed != 1) return false;
+
+        RecordOfferUsed(c, tx, userId, offerCode, now);
+        tx.Commit();
+        return true;
+    }
+
+    public bool ScheduleCancellation(string userId, DateTimeOffset cancelAt)
+    {
+        using var c = db.Open();
+        return c.Execute(
+            "UPDATE subscriptions SET cancel_at = @cancelAt, next_billing_date = NULL " +
+            "WHERE user_id = @userId AND status IN ('active', 'paused') AND cancel_at IS NULL",
+            new { cancelAt = Iso.Format(cancelAt), userId }) == 1;
+    }
+
+    public bool CancelNow(string userId, DateTimeOffset now)
+    {
+        using var c = db.Open();
+        return c.Execute(
+            "UPDATE subscriptions SET status = 'canceled', cancel_at = @now, next_billing_date = NULL, paused_until = NULL " +
+            "WHERE user_id = @userId AND status IN ('active', 'paused')",
+            new { now = Iso.Format(now), userId }) == 1;
+    }
+
+    private static void RecordOfferUsed(Microsoft.Data.Sqlite.SqliteConnection c, Microsoft.Data.Sqlite.SqliteTransaction tx,
+        string userId, string offerCode, DateTimeOffset now) =>
+        c.Execute(
+            "INSERT INTO retention_offers_used (user_id, offer_code, applied_at) VALUES (@userId, @offerCode, @at)",
+            new { userId, offerCode, at = Iso.Format(now) }, tx);
 }
