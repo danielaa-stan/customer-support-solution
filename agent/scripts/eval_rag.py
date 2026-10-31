@@ -56,7 +56,13 @@ def main() -> int:
 
     if args.answers:
         prompts = PromptLibrary(settings.prompts.dir)
-        a = evaluate_answers(retriever, LLMClient.from_settings(settings), prompts, data["in_scope"], args.answers, k)
+        def save_partial(partial: dict) -> None:
+            report["answers"] = partial
+            REPORT.parent.mkdir(parents=True, exist_ok=True)
+            REPORT.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
+
+        a = evaluate_answers(retriever, LLMClient.from_settings(settings), prompts, data["in_scope"], args.answers, k,
+                             on_progress=save_partial)
         report["answers"] = a
         logger.info("ANSWERS (%d questions, judged against the reference policy)", args.answers)
         for key in ("without_rag", "with_rag"):

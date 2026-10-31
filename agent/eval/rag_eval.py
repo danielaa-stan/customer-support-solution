@@ -83,25 +83,37 @@ def _judge(llm: LLMClient, prompts: PromptLibrary, question: str, answer: str, r
 
 
 def evaluate_answers(retriever: Retriever, llm: LLMClient, prompts: PromptLibrary, in_scope: list[dict],
-                     limit: int, k: int) -> dict:
+                     limit: int, k: int, on_progress=None) -> dict:
     by_ref = {c.metadata["policy_ref"]: c.metadata["text"] for c in retriever.index.chunks if c.source == "policy"}
     rows = []
     for case in in_scope[:limit]:
-        q, ref = case["question"], case["expected"]
-        plain = llm.chat([{"role": "system", "content": prompts.get("eval_answer_without_rag")},
-                          {"role": "user", "content": q}]).content
-        hits = retriever.search_policy(q, top_k=k).results
-        context = "\n\n".join(f"[{h['policy_ref']}] {h['title']}: {h['text']}" for h in hits)
-        grounded = llm.chat([{"role": "system", "content": fill(prompts.get("eval_answer_with_rag"), context=context)},
-                             {"role": "user", "content": q}]).content
-        row = {"question": q, "expected": ref,
-               "without_rag": {"answer": plain, **_judge(llm, prompts, q, plain, ref, by_ref[ref])},
-               "with_rag": {"answer": grounded, **_judge(llm, prompts, q, grounded, ref, by_ref[ref])}}
-        logger.info("[%s] without RAG: %s | with RAG: %s", ref,
-                    {k: row["without_rag"].get(k) for k in ("correct", "hallucination", "cites_policy")},
-                    {k: row["with_rag"].get(k) for k in ("correct", "hallucination", "cites_policy")})
-        rows.append(row)
+        try:
+            rows.append(_compare_one(retriever, llm, prompts, case, by_ref, k))
+        except Exception as e:  # one failed question (quota, network) must not lose the others
+            logger.error("Skipping %r: %s: %s", case["question"], type(e).__name__, e)
+        if on_progress:
+            on_progress(_summarise(rows))
+    return _summarise(rows)
 
+
+def _compare_one(retriever, llm, prompts, case, by_ref, k) -> dict:
+    q, ref = case["question"], case["expected"]
+    plain = llm.chat([{"role": "system", "content": prompts.get("eval_answer_without_rag")},
+                      {"role": "user", "content": q}]).content
+    hits = retriever.search_policy(q, top_k=k).results
+    context = "\n\n".join(f"[{h['policy_ref']}] {h['title']}: {h['text']}" for h in hits)
+    grounded = llm.chat([{"role": "system", "content": fill(prompts.get("eval_answer_with_rag"), context=context)},
+                         {"role": "user", "content": q}]).content
+    row = {"question": q, "expected": ref,
+           "without_rag": {"answer": plain, **_judge(llm, prompts, q, plain, ref, by_ref[ref])},
+           "with_rag": {"answer": grounded, **_judge(llm, prompts, q, grounded, ref, by_ref[ref])}}
+    logger.info("[%s] without RAG: %s | with RAG: %s", ref,
+                {k: row["without_rag"].get(k) for k in ("correct", "hallucination", "cites_policy")},
+                {k: row["with_rag"].get(k) for k in ("correct", "hallucination", "cites_policy")})
+    return row
+
+
+def _summarise(rows: list[dict]) -> dict:
     def summary(key: str) -> dict:
         judged = [r[key] for r in rows if "correct" in r[key]]
         n = max(1, len(judged))
