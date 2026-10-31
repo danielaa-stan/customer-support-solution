@@ -1,6 +1,8 @@
 # Contract changelog
 
 ## Unreleased
+- Align the backend plan catalog and fallback seed with the Ukraine pricing contract;
+  accept empty runtime-table arrays in generated seeds and reject supplied runtime history.
 - Align the regular monthly catalog with the supplied Ukraine pricing: Individual 4.99 USD,
   Duo 6.49 USD, Family 7.99 USD, and Student 2.49 USD. Regenerate synthetic cases and customer
   seed records, and update the analytics plan dimension without rewriting recorded financial facts.

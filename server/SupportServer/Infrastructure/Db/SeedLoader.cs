@@ -14,6 +14,8 @@ public static class SeedLoader
     private static readonly string[] Tables =
         ["users", "subscriptions", "payments", "usage_stats", "retention_offers_used"];
 
+    private static readonly string[] RuntimeTables = ["tickets", "pending_actions", "audit_log"];
+
     private const string PostgresTimestamp = "timestamp with time zone";
 
     public static int Load(DbConnection connection, string seedPath, SqlDialect dialect)
@@ -26,6 +28,12 @@ public static class SeedLoader
 
         foreach (var property in root.EnumerateObject())
         {
+            if (RuntimeTables.Contains(property.Name))
+            {
+                if (property.Value.ValueKind != JsonValueKind.Array || property.Value.GetArrayLength() != 0)
+                    throw new InvalidDataException($"{seedPath}: runtime table '{property.Name}' must be an empty array.");
+                continue;
+            }
             if (!Tables.Contains(property.Name))
                 throw new InvalidDataException(
                     $"{seedPath}: unknown table '{property.Name}'. Allowed: {string.Join(", ", Tables)}.");

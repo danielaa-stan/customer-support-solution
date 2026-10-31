@@ -102,7 +102,7 @@ public sealed class ToolFlowTests : IDisposable
         var first = TestHarness.Parse(_payments.IssueRefund("pay_demo_dbl_2", "double_charge", "refund-policy#2.2"));
         Assert.True(first.GetProperty("ok").GetBoolean());
         Assert.Equal("done", first.GetProperty("status").GetString());
-        Assert.Equal(9.99, first.GetProperty("data").GetProperty("refunded_amount").GetDouble());
+        Assert.Equal(4.99, first.GetProperty("data").GetProperty("refunded_amount").GetDouble());
         Assert.True(first.GetProperty("audit_id").GetInt64() > 0);
 
         var second = TestHarness.Parse(_payments.IssueRefund("pay_demo_dbl_2", "double_charge", "refund-policy#2.2"));

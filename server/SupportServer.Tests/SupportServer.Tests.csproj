@@ -21,6 +21,7 @@
   <ItemGroup>
     <Using Include="Xunit" />
     <None Include="..\dev-seed.json" Link="dev-seed.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\data\seed\seed.json" Link="customer-seed.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
