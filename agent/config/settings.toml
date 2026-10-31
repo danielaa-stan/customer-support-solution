@@ -37,3 +37,7 @@ context_tool = "sys_set_context"                 # contracts/03: called before e
 hidden_tool_prefix = "sys_"                      # tools with this prefix are never shown to the model
 startup_timeout_s = 90.0
 call_timeout_s = 30.0
+
+[safety]
+config_file = "safety.toml"    # relative to this file
+escalation_tool = "escalate_to_human"

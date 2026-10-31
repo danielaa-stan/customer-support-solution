@@ -65,12 +65,19 @@ class MCPSettings:
 
 
 @dataclass(frozen=True)
+class SafetySettings:
+    config_file: Path
+    escalation_tool: str
+
+
+@dataclass(frozen=True)
 class Settings:
     llm: LLMSettings
     logging: LoggingSettings
     prompts: PromptSettings
     agent: AgentSettings
     mcp: MCPSettings
+    safety: SafetySettings
     gemini_api_key: str = field(repr=False)
 
 
@@ -113,10 +120,14 @@ def load_settings(path: Path = DEFAULT_SETTINGS_PATH, env: Mapping[str, str] | N
     prompts = _section(raw, "prompts", PromptSettings, env)
     prompts["dir"] = (path.parent / prompts["dir"]).resolve()
 
+    safety = _section(raw, "safety", SafetySettings, env)
+
     api_key = env.get("GEMINI_API_KEY", "")
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is not set. Copy .env.example to .env and add the key.")
     return Settings(llm=llm, logging=LoggingSettings(**log), prompts=PromptSettings(**prompts),
                     agent=AgentSettings(**_section(raw, "agent", AgentSettings, env)),
                     mcp=MCPSettings(**_section(raw, "mcp", MCPSettings, env)),
+                    safety=SafetySettings(config_file=(path.parent / safety["config_file"]).resolve(),
+                                          escalation_tool=safety["escalation_tool"]),
                     gemini_api_key=api_key)

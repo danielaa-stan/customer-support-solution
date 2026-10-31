@@ -42,6 +42,7 @@ class FakeProvider:
 
     def list_tools(self):
         return [ToolSpec("get_user_profile", "profile"), ToolSpec("issue_refund", "refund"),
+                ToolSpec("escalate_to_human", "handover"),
                 ToolSpec("sys_set_context", "hidden")]
 
     def call(self, name, args):

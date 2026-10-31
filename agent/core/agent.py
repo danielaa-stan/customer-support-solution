@@ -11,7 +11,8 @@ from dataclasses import dataclass, field
 
 from agent.llm import LLMClient
 from agent.prompts import PromptLibrary
-from agent.settings import AgentSettings
+from agent.safety.screening import MessageScreener, ScreeningResult
+from agent.settings import AgentSettings, SafetySettings
 from agent.tools.base import ToolRegistry, ToolResult, truncate_json
 from agent.core.session import Session, ToolEvent
 
@@ -27,15 +28,18 @@ class AgentTurn:
     needs_human: bool = False
     rounds: int = 0
     latency_s: float = 0.0
+    safety_flags: list[str] = field(default_factory=list)
 
 
 class SupportAgent:
     def __init__(self, llm: LLMClient, tools: ToolRegistry, prompts: PromptLibrary, cfg: AgentSettings,
-                 user_id: str):
+                 user_id: str, screener: MessageScreener, safety_cfg: SafetySettings):
         self.llm = llm
         self.tools = tools
         self.prompts = prompts
         self.cfg = cfg
+        self.screener = screener
+        self.safety_cfg = safety_cfg
         self.session = Session.start(user_id, cfg.session_id_prefix, prompts.get("system"))
         logger.info("Session %s started for user %s", self.session.session_id, user_id)
 
@@ -44,11 +48,20 @@ class SupportAgent:
         start = time.perf_counter()
         s.user_turn += 1
         self.tools.set_context(s.session_id, s.user_id, s.user_turn)
-        s.history.append({"role": "user", "content": text})
-        s.log("user", text)
         logger.info("[%s] turn %d user: %s", s.session_id, s.user_turn, text)
 
-        turn = AgentTurn(reply="")
+        screening = self.screener.screen(text)
+        turn = AgentTurn(reply="", safety_flags=screening.names)
+        if screening.handover:
+            s.history.append({"role": "user", "content": text})
+            s.log("user", text, safety_flags=screening.names)
+            return self._handover(text, screening, turn, start)
+
+        # Notes go inside the user message: some providers reject system messages mid-conversation.
+        notes = [self.prompts.get(n) for n in screening.model_notes]
+        s.history.append({"role": "user", "content": "\n\n".join(notes + [text])})
+        s.log("user", text, safety_flags=screening.names)
+
         for round_no in range(1, self.cfg.max_tool_rounds + 1):
             turn.rounds = round_no
             reply = self.llm.chat(s.history, self.tools.openai_schemas())
@@ -80,6 +93,26 @@ class SupportAgent:
         return turn
 
     # ------------------------------------------------------------------ internals
+    def _handover(self, text: str, screening: ScreeningResult, turn: AgentTurn, start: float) -> AgentTurn:
+        """Skip the LLM: escalate to a human and reply with a fixed, safe message."""
+        cat = screening.handover
+        logger.warning("[%s] handover before LLM: %s", self.session.session_id, cat.name)
+        args = {"priority": cat.priority, "category": cat.escalation_category,
+                "summary": self.prompts.get("handover_summary").format(category=cat.name, message=text),
+                "suggested_action": None}
+        result = self.tools.call(self.safety_cfg.escalation_tool, args)
+        if not result.ok:
+            logger.error("[%s] escalation failed: %s", self.session.session_id, result.error)
+        event = ToolEvent(name=self.safety_cfg.escalation_tool, args=args, result=result.to_dict(), latency_s=0.0)
+        self.session.log("tool", event.result, name=event.name)
+        turn.tool_events.append(event)
+        turn.reply = self.prompts.get(cat.reply_prompt)
+        turn.needs_human = True
+        self.session.history.append({"role": "assistant", "content": turn.reply})
+        self.session.log("assistant", turn.reply)
+        turn.latency_s = time.perf_counter() - start
+        return turn
+
     def _parse_args(self, tool_call) -> tuple[dict, str | None]:
         raw = tool_call.function.arguments or "{}"
         try:
