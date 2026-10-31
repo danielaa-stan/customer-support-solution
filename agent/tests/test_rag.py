@@ -141,3 +141,8 @@ def test_retrieval_eval_metrics(retriever):
     assert report.hit_at_1 == 1.0 and report.recall_at_k == 1.0 and report.mrr == 1.0
     assert report.gap_detection_rate == 1.0 and report.false_gap_rate == 0.0
     assert suggested_min_score(report) is not None
+
+
+def test_fill_keeps_json_braces():
+    from agent.eval.rag_eval import fill
+    assert fill('{"correct": 0-2} {question}', question="Q?") == '{"correct": 0-2} Q?'

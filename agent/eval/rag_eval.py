@@ -65,8 +65,15 @@ def suggested_min_score(report: RetrievalReport) -> float | None:
     return round((hi_out + lo_in) / 2, 3) if lo_in > hi_out else None
 
 
+def fill(template: str, **values: str) -> str:
+    """Replace {name} placeholders only; other braces (e.g. JSON examples in the prompt) stay as they are."""
+    for key, value in values.items():
+        template = template.replace("{" + key + "}", value)
+    return template
+
+
 def _judge(llm: LLMClient, prompts: PromptLibrary, question: str, answer: str, ref: str, reference: str) -> dict:
-    text = prompts.get("eval_judge").format(policy_ref=ref, reference=reference, question=question, answer=answer)
+    text = fill(prompts.get("eval_judge"), policy_ref=ref, reference=reference, question=question, answer=answer)
     reply = llm.chat([{"role": "user", "content": text}])
     m = re.search(r"\{.*\}", reply.content, re.S)
     try:
@@ -85,7 +92,7 @@ def evaluate_answers(retriever: Retriever, llm: LLMClient, prompts: PromptLibrar
                           {"role": "user", "content": q}]).content
         hits = retriever.search_policy(q, top_k=k).results
         context = "\n\n".join(f"[{h['policy_ref']}] {h['title']}: {h['text']}" for h in hits)
-        grounded = llm.chat([{"role": "system", "content": prompts.get("eval_answer_with_rag").format(context=context)},
+        grounded = llm.chat([{"role": "system", "content": fill(prompts.get("eval_answer_with_rag"), context=context)},
                              {"role": "user", "content": q}]).content
         row = {"question": q, "expected": ref,
                "without_rag": {"answer": plain, **_judge(llm, prompts, q, plain, ref, by_ref[ref])},
